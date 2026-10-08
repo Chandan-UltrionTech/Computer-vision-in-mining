@@ -1,0 +1,267 @@
+.section {
+  position: relative;
+  padding: 110px 6% 50px;
+  background: #f0f1e9;
+  z-index: 10;
+  border-top: 1px solid #d2d7c7;
+  scroll-margin-top: 75px;
+}
+.lead {
+  max-width: 860px;
+}
+.label {
+  font-size: 13px;
+  color: #69735e;
+  display: block;
+  margin-bottom: 28px;
+}
+.lead h2 {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: clamp(52px, 6vw, 90px);
+  letter-spacing: -0.06em;
+  line-height: 0.98;
+}
+.lead p {
+  margin-top: 28px;
+  max-width: 490px;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #626c56;
+}
+.summary {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 25px;
+  padding: 45px 0;
+  border-bottom: 1px solid #ccd3c0;
+  margin: 45px 0 70px;
+}
+.summary h3 {
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+.summary p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #6a735e;
+}
+.opportunities {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 45px;
+  margin: 25px 0 70px;
+}
+.opportunity {
+  border-top: 2px solid var(--ink);
+  padding-top: 20px;
+}
+.opportunity svg {
+  width: 100%;
+  height: 140px;
+}
+.opportunity h3 {
+  font-size: 23px;
+  letter-spacing: -0.8px;
+  margin: 15px 0;
+}
+.opportunity p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #647056;
+}
+.opportunity button {
+  margin-top: 23px;
+  min-height: 44px;
+  border: 0;
+  border-bottom: 1px solid var(--ink);
+  background: transparent;
+  font-size: 13px;
+  padding: 0 0 5px;
+}
+.pipelineTitle {
+  font-size: 22px;
+  letter-spacing: -0.6px;
+}
+.transcript {
+  margin: -25px 0 65px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 24px;
+}
+.transcript summary {
+  cursor: pointer;
+  font-size: 14px;
+  min-height: 44px;
+  line-height: 44px;
+}
+.transcript summary:focus-visible {
+  outline: 3px solid var(--accent-dark);
+  outline-offset: 5px;
+}
+.transcript article {
+  max-width: 700px;
+  margin: 25px 0 40px;
+}
+.transcript h3 {
+  font-size: 19px;
+  margin-bottom: 12px;
+}
+.transcript p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #626c56;
+  margin-top: 8px;
+}
+.pipeline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 25px 0 45px;
+}
+.pipeline span {
+  padding: 14px 17px;
+  border: 1px solid #9ca68e;
+  border-radius: 8px;
+  font-size: 12px;
+  background: #faf8f2;
+}
+.pipeline i {
+  font-style: normal;
+  font-size: 21px;
+  color: var(--accent-dark);
+}
+.path {
+  font-size: 13px;
+  line-height: 1.9;
+  color: #626d55;
+  margin-bottom: 65px;
+}
+.planner {
+  padding: 40px;
+  border: 1px solid #bbc5ab;
+  border-radius: 16px;
+  background: var(--canvas);
+  max-width: 950px;
+  scroll-margin-top: 105px;
+}
+.planner h3 {
+  font-size: 30px;
+  letter-spacing: -1px;
+}
+.planner p {
+  font-size: 14px;
+  line-height: 1.7;
+  max-width: 650px;
+  color: #646e58;
+  margin: 15px 0;
+}
+.form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  margin-top: 28px;
+}
+.form label {
+  display: grid;
+  gap: 10px;
+  font-size: 12px;
+}
+.form input,
+.form select,
+.form textarea {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #b8c2aa;
+  background: #fffef9;
+  border-radius: 5px;
+  min-height: 46px;
+}
+.form textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+.wide {
+  grid-column: 1/-1;
+}
+.action {
+  background: var(--ink);
+  color: var(--canvas);
+  border: 0;
+  border-radius: 26px;
+  padding: 14px 24px;
+  font-size: 13px;
+  min-height: 47px;
+}
+.plan {
+  border-left: 3px solid var(--accent);
+  padding: 0 0 0 22px;
+  margin: 30px 0 5px;
+}
+.plan h4 {
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+.plan ol {
+  padding-left: 20px;
+  font-size: 14px;
+  line-height: 1.9;
+}
+.plan p {
+  font-size: 12px;
+}
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  padding-top: 60px;
+  font-size: 11px;
+  color: #7a846e;
+}
+.footer a {
+  color: var(--ink);
+}
+@media (max-width: 767px) {
+  .section {
+    padding: 70px 6% 35px;
+  }
+  .lead h2 {
+    font-size: 50px;
+  }
+  .lead p {
+    font-size: 14px;
+  }
+  .summary {
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin: 25px 0 45px;
+  }
+  .opportunities {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .opportunity svg {
+    height: 150px;
+  }
+  .pipeline {
+    gap: 8px;
+  }
+  .pipeline span {
+    padding: 12px;
+    font-size: 11px;
+  }
+  .planner {
+    padding: 23px;
+  }
+  .form {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .footer {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .planner h3 {
+    font-size: 25px;
+  }
+}

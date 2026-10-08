@@ -1,0 +1,138 @@
+@import "lenis/dist/lenis.css";
+:root {
+  --canvas: #faf8f2;
+  --ink: #20221f;
+  --secondary: #73766f;
+  --accent: #f45b3d;
+  --accent-dark: #b53d25;
+  --warning: #b53d25;
+  --muted: #e8e8df;
+  --border: #d3d5c9;
+  --shadow: 0 12px 38px #20221f12;
+  --display: "Arial Narrow", "Franklin Gothic Medium", Impact, sans-serif;
+  --body: Arial, Helvetica, sans-serif;
+  --annotation: 18px;
+  --stroke: 2.5;
+  --space: 8px;
+  --radius: 28px;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--body);
+  overscroll-behavior-x: none;
+}
+body {
+  overflow-x: clip;
+}
+button,
+a,
+select,
+input,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+button,
+a {
+  touch-action: manipulation;
+}
+button {
+  cursor: pointer;
+}
+a {
+  color: inherit;
+}
+button:focus-visible,
+a:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--accent-dark);
+  outline-offset: 5px;
+}
+::selection {
+  background: #f7c7b5;
+}
+button {
+  color: inherit;
+}
+svg text {
+  stroke: none;
+  font-family: var(--body);
+  font-size: var(--annotation);
+  font-weight: 500;
+  letter-spacing: 0.1px;
+}
+svg text:not([fill]) {
+  fill: #626d56;
+}
+svg .hand-note {
+  font-style: italic;
+  font-size: 20px;
+}
+svg path,
+svg line,
+svg circle,
+svg ellipse,
+svg rect,
+svg polygon {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.cv-layer {
+  transition: visibility 0.2s;
+}
+[data-cv="off"] .cv-layer {
+  visibility: hidden !important;
+}
+[data-cv="off"] [data-art="scan"] {
+  visibility: hidden !important;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+a {
+  text-underline-offset: 5px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 20px;
+  z-index: 100;
+  background: var(--canvas);
+  padding: 15px;
+}
+.skip-link:focus {
+  top: 15px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}

@@ -1,0 +1,549 @@
+.journey {
+  position: relative;
+  background: var(--canvas);
+}
+.viewport {
+  height: 100svh;
+  position: sticky;
+  top: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--canvas);
+}
+.panels {
+  position: absolute;
+  inset: 0;
+}
+.scene {
+  position: absolute;
+  inset: 0;
+  background: var(--canvas);
+  overflow: hidden;
+  visibility: hidden;
+}
+.scene:first-child {
+  visibility: visible;
+}
+.scene::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cpath d='m8 8 1 0m26 49 1 0m43-24 1 0m-67 45 1 0' stroke='%2320221f' opacity='.10'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+.title {
+  position: absolute;
+  z-index: 2;
+  top: 19%;
+  left: 4.6%;
+  max-width: 660px;
+  pointer-events: none;
+}
+.part {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #63695d;
+  margin-bottom: 20px;
+}
+.part::before {
+  content: "";
+  width: 27px;
+  height: 2px;
+  background: var(--ink);
+}
+.title h1,
+.title h2 {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: clamp(48px, 6.4vw, 100px);
+  letter-spacing: -0.065em;
+  line-height: 0.94;
+  white-space: pre-line;
+}
+.title p {
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 345px;
+  margin-top: 22px;
+  color: #686e60;
+}
+.scene[data-scene="arrival"] .title h1 {
+  font-size: clamp(74px, 8.2vw, 132px);
+  max-width: 770px;
+}
+.scene[data-scene="arrival"] .title {
+  top: 20%;
+}
+.scene[data-scene="arrival"] .title p {
+  max-width: 330px;
+}
+.scene[data-scene="safety"] .title,
+.scene[data-scene="driver"] .title {
+  top: 29%;
+}
+.scene[data-scene="finale"] .title h2 {
+  font-size: clamp(50px, 5vw, 76px);
+}
+.art {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  bottom: -1%;
+  overflow: visible;
+}
+.art svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.scene[data-scene="core"] .title,
+.scene[data-scene="bucket"] .title,
+.scene[data-scene="froth"] .title {
+  top: 17%;
+}
+.scene[data-scene="core"] .title h2,
+.scene[data-scene="bucket"] .title h2,
+.scene[data-scene="froth"] .title h2 {
+  font-size: clamp(48px, 5vw, 78px);
+}
+.introBottom {
+  position: absolute;
+  left: 4.6%;
+  bottom: 12%;
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--secondary);
+}
+.scrollMark {
+  width: 25px;
+  height: 38px;
+  border: 1.5px solid var(--ink);
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+}
+.introBottom strong {
+  font-weight: 400;
+  color: var(--ink);
+}
+.carrier {
+  position: absolute;
+  z-index: 5;
+  width: 90px;
+  height: 80px;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+  opacity: 0;
+}
+.carrier svg {
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+.carrier[data-kind="belt"],
+.carrier[data-kind="seam"],
+.carrier[data-kind="water"] {
+  width: 160vw;
+  left: -30vw;
+  top: 49%;
+  height: 100px;
+}
+.carrier[data-kind="road"] {
+  width: 450px;
+  height: 270px;
+  top: 45%;
+  left: 35%;
+}
+.carrier[data-kind="belt"] {
+  height: 210px;
+  top: 55%;
+}
+.carrier[data-kind="seam"] {
+  height: 60px;
+}
+.carrier[data-kind="drone"] {
+  width: 200px;
+  height: 160px;
+  top: 34%;
+  left: 45%;
+}
+.carrier[data-kind="rock"] [data-handoff="rock"],
+.carrier[data-kind="road"] [data-handoff="road"],
+.carrier[data-kind="belt"] [data-handoff="belt"],
+.carrier[data-kind="seam"] [data-handoff="seam"],
+.carrier[data-kind="water"] [data-handoff="water"],
+.carrier[data-kind="drone"] [data-handoff="drone"] {
+  display: block;
+}
+.detonator {
+  position: absolute;
+  z-index: 4;
+  left: 11%;
+  bottom: 15%;
+  width: 140px;
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.detonator svg {
+  width: 100px;
+  height: 124px;
+}
+.detonator:hover {
+  transform: translateY(-3px);
+}
+.detonator[aria-pressed="true"] {
+  color: var(--accent-dark);
+}
+.detonator[aria-pressed="true"] [data-handle] {
+  transform: translateY(23px);
+}
+.detonator [data-handle] {
+  transition: transform 0.25s;
+}
+.reducedCopy {
+  display: none;
+}
+.thesis {
+  position: absolute;
+  left: 4.6%;
+  top: 39%;
+  font-size: 19px;
+  line-height: 1.4;
+  max-width: 350px;
+}
+.thesis span {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.thesis span:last-child {
+  font-weight: 700;
+}
+.thesis span:nth-child(2),
+.thesis span:nth-child(3) {
+  opacity: 1;
+}
+.thesis {
+  width: 430px;
+  max-width: 80vw;
+}
+.thesis span {
+  width: 100%;
+}
+.scene[data-scene="arrival"] .title {
+  max-width: 1000px;
+}
+.scene[data-scene="arrival"] .title h1 {
+  font-size: clamp(74px, 7.2vw, 110px);
+  max-width: 1000px;
+}
+.scene[data-scene="finale"] .title p {
+  display: none;
+}
+.scene[data-scene="finale"] .art {
+  height: 79%;
+  bottom: 4%;
+}
+@media (min-width: 1600px) {
+  .art {
+    height: 94%;
+  }
+}
+@media (max-width: 1024px) and (min-width: 768px) {
+  .title {
+    top: 22%;
+    max-width: 510px;
+  }
+  .title h2 {
+    font-size: 64px;
+  }
+  .title p {
+    font-size: 14px;
+    max-width: 295px;
+  }
+  .scene[data-scene="arrival"] .title h1 {
+    font-size: 89px;
+  }
+  .art {
+    bottom: -8%;
+  }
+  .introBottom {
+    bottom: 13%;
+  }
+}
+@media (max-width: 767px) {
+  .viewport {
+    height: 100svh;
+  }
+  .title {
+    top: 21%;
+    left: 6%;
+    right: 6%;
+    max-width: unset;
+  }
+  .part {
+    font-size: 10px;
+    margin-bottom: 14px;
+    max-width: 300px;
+    line-height: 1.5;
+  }
+  .title h1,
+  .title h2,
+  .scene[data-scene="arrival"] .title h1,
+  .scene[data-scene="core"] .title h2,
+  .scene[data-scene="bucket"] .title h2,
+  .scene[data-scene="froth"] .title h2 {
+    font-size: clamp(44px, 13.5vw, 66px);
+    letter-spacing: -0.06em;
+    line-height: 0.95;
+  }
+  .scene[data-scene="arrival"] .title h1 {
+    font-size: clamp(52px, 16vw, 78px);
+  }
+  .title p {
+    font-size: 13px;
+    line-height: 1.5;
+    max-width: 280px;
+    margin-top: 16px;
+  }
+  .scene[data-scene="safety"] .title,
+  .scene[data-scene="driver"] .title {
+    top: 24%;
+  }
+  .scene[data-scene="core"] .title,
+  .scene[data-scene="bucket"] .title,
+  .scene[data-scene="froth"] .title {
+    top: 21%;
+  }
+  .art {
+    height: 57%;
+    width: 190%;
+    left: -55%;
+    bottom: 6%;
+  }
+  .art svg {
+    height: 100%;
+  }
+  .scene[data-scene="arrival"] .art {
+    width: 215%;
+    left: -85%;
+    height: 54%;
+    bottom: 5%;
+  }
+  .scene[data-scene="driver"] .art {
+    width: 200%;
+    left: -79%;
+    height: 48%;
+    bottom: 9%;
+  }
+  .scene[data-scene="bucket"] .art,
+  .scene[data-scene="core"] .art {
+    width: 165%;
+    left: -38%;
+    bottom: 5%;
+    height: 52%;
+  }
+  .scene[data-scene="finale"] .art {
+    width: 137%;
+    left: -18%;
+    height: 46%;
+    bottom: 7%;
+  }
+  .scene[data-scene="finale"] .title h2 {
+    font-size: 52px;
+  }
+  .thesis {
+    top: 40%;
+    left: 6%;
+    font-size: 15px;
+    max-width: 280px;
+  }
+  .introBottom {
+    left: 6%;
+    bottom: 14%;
+    font-size: 10px;
+    gap: 16px;
+  }
+  .detonator {
+    left: 4%;
+    bottom: 16%;
+    width: 100px;
+    font-size: 10px;
+  }
+  .detonator svg {
+    width: 70px;
+    height: 94px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .viewport {
+    height: auto;
+    position: relative;
+    overflow: visible;
+  }
+  .panels {
+    position: relative;
+  }
+  .scene {
+    position: relative;
+    visibility: visible !important;
+    min-height: 820px;
+    overflow: hidden;
+    padding-bottom: 42px;
+  }
+  .title,
+  .scene[data-scene="arrival"] .title,
+  .scene[data-scene="safety"] .title,
+  .scene[data-scene="driver"] .title,
+  .scene[data-scene="core"] .title,
+  .scene[data-scene="bucket"] .title,
+  .scene[data-scene="froth"] .title {
+    position: relative;
+    top: auto;
+    left: auto;
+    padding: 140px 5% 0;
+    max-width: 820px;
+  }
+  .art {
+    height: 440px;
+    top: 220px;
+    bottom: auto;
+    z-index: 0;
+  }
+  .title {
+    z-index: 2;
+  }
+  .title h1,
+  .title h2 {
+    font-size: 62px;
+  }
+  .title p {
+    max-width: 400px;
+  }
+  .reducedCopy {
+    display: block;
+    position: relative;
+    margin: 400px 5% 0;
+    max-width: 760px;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .reducedCopy strong {
+    display: block;
+    font-size: 19px;
+    margin-bottom: 8px;
+  }
+  .reducedCopy p {
+    margin-top: 8px;
+  }
+  .introBottom,
+  .carrier,
+  .chapters,
+  .thesis {
+    display: none;
+  }
+  .detonator {
+    bottom: 220px;
+  }
+  .scene[data-scene="finale"] {
+    min-height: 950px;
+  }
+  .scene[data-scene="finale"] .reducedCopy {
+    margin-top: 400px;
+  }
+  .scene[data-scene="slurry"] [data-art="water"] {
+    transform: none !important;
+  }
+  .scene[data-scene="blast"] [data-art="blast-cloud"] {
+    opacity: 1 !important;
+  }
+  .art [data-art="cv"],
+  .art [data-art="cloud"],
+  .art [data-art="mesh"] {
+    opacity: 1 !important;
+  }
+}
+@media (max-width: 767px) {
+  .scene[data-scene="arrival"] .title h1 {
+    font-size: clamp(52px, 16vw, 78px);
+  }
+  .scene[data-scene="finale"] .art {
+    height: 46%;
+  }
+  .thesis {
+    top: 44%;
+    width: 85%;
+    font-size: 15px;
+  }
+  .introBottom {
+    bottom: 11%;
+    background: var(--canvas);
+    padding: 7px 10px;
+    border-radius: 20px;
+  }
+  .scene[data-scene="arrival"] .introBottom {
+    left: 4%;
+    font-size: 10px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .title {
+    right: auto !important;
+  }
+  .scene[data-scene="finale"] .title p {
+    display: block;
+  }
+  .scene[data-scene="finale"] .art {
+    height: 440px;
+    bottom: auto;
+  }
+  .scene[data-scene="arrival"] .title h1 {
+    font-size: 62px;
+  }
+  .scene[data-scene="conveyor"] [data-art="tool"] {
+    transform: translate(65px, 0) !important;
+  }
+  .scene[data-scene="conveyor"] [data-art="detection"] {
+    transform: translate(65px, 0) !important;
+  }
+}
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  .scene {
+    min-height: 760px;
+  }
+  .title {
+    padding-top: 130px !important;
+  }
+  .title h1,
+  .title h2 {
+    font-size: 48px !important;
+  }
+  .art {
+    top: 240px;
+    height: 330px !important;
+    bottom: auto !important;
+  }
+  .reducedCopy {
+    margin-top: 330px;
+    font-size: 14px;
+  }
+  .scene[data-scene="finale"] .reducedCopy {
+    margin-top: 320px;
+  }
+  .detonator {
+    bottom: 220px;
+  }
+}
