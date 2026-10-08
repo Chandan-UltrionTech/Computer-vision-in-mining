@@ -7,44 +7,55 @@ import { useExperience } from "../store/experienceStore";
 import { Geology } from "./part-1/Geology";
 import { Material } from "./part-2/Material";
 import { Recovery } from "./part-3/Recovery";
+import { Environment } from "../illustrations/Environment";
 import styles from "../styles/Journey.module.css";
 
 export function Scene({ definition: s }: { definition: SceneDefinition }) {
   const ref = useRef<HTMLElement>(null);
+  const advanceRef = useRef<gsap.core.Tween | null>(null);
+  const removeListenersRef = useRef<(() => void) | null>(null);
   const detonated = useExperience((v) => v.detonated);
-  const { contextSafe } = useGSAP({ scope: ref });
+  const { contextSafe } = useGSAP(() => () => {
+    advanceRef.current?.kill();
+    removeListenersRef.current?.();
+  }, { scope: ref });
   function blast() {
     contextSafe(() => {
+      advanceRef.current?.kill();
+      removeListenersRef.current?.();
       useExperience.getState().detonate();
       if (
         !ref.current ||
         window.matchMedia("(prefers-reduced-motion: reduce)").matches
       )
         return;
-      const cloud = ref.current.querySelector("[data-art=blast-cloud]");
-      const debris = ref.current.querySelector("[data-art=debris]");
-      gsap
-        .timeline()
-        .fromTo(
-          cloud,
-          { opacity: 0, scale: 0.1 },
-          {
-            opacity: 1,
-            scale: 1,
-            duration: 0.5,
-            transformOrigin: "50% 100%",
-            ease: "power3.out",
-          },
-        )
-        .fromTo(
-          debris,
-          { y: 0, x: 0 },
-          { y: -95, x: 50, duration: 0.6, ease: "power2.out" },
-          0.16,
-        )
-        .to(debris, { y: 25, duration: 0.65, ease: "power2.in" });
+      const chapters = Array.from(document.querySelectorAll<HTMLElement>('[data-scroll-chapter]'));
+      const index = chapters.findIndex(chapter => chapter.dataset.scrollChapter === 'blast');
+      const start = chapters.slice(0,index).reduce((sum,chapter) => sum + chapter.offsetHeight,0);
+      if (detonated) window.scrollTo({top:start + chapters[index].offsetHeight * .35,behavior:'instant'});
+      const cursor = {y:window.scrollY};
+      // The button advances the scroll clock. Only the controller animates blast art.
+      const advance = gsap.to(cursor,{
+        y:start + chapters[index].offsetHeight * .7,
+        duration:1.15,ease:'power2.inOut',
+        onUpdate:() => window.scrollTo({top:cursor.y,behavior:'instant'}),
+        onComplete:removeListeners,
+      });
+      advanceRef.current = advance;
+      removeListenersRef.current = removeListeners;
+      function interrupt(){advance.kill();removeListeners();}
+      function removeListeners(){window.removeEventListener('wheel',interrupt);window.removeEventListener('touchstart',interrupt);}
+      window.addEventListener('wheel',interrupt,{passive:true});
+      window.addEventListener('touchstart',interrupt,{passive:true});
     })();
   }
+  const mobileNotes: Partial<Record<SceneDefinition['id'], string>> = {
+    drill:'A core rises through the geological layers.', core:'Fractures / veins / lithology', grade:'Material regions, grounded in site calibration',
+    fragments:'Contours become a size distribution.', safety:'Worker tracking / PPE / closing distance', bucket:'Tooth condition / oversize / loading decision',
+    driver:'Eye closure and head pose, observed over time', conveyor:'Foreign object / downstream risk / belt response', sizing:'Particle contours / spans / P20, P50, P80',
+    sorter:'Accepted material continues. Rejects leave the stream.', froth:'Bubble motion / texture / stability over time',
+    survey:'Overlapping images / points / mesh / volume', thermal:'RGB context / thermal reveal / inspection target',
+  };
   const art =
     s.part === 1 ? (
       <Geology id={s.id} />
@@ -76,7 +87,7 @@ export function Scene({ definition: s }: { definition: SceneDefinition }) {
         <svg
           viewBox="0 0 1400 790"
           fill="none"
-          stroke="#272c23"
+          stroke="#17191c"
           strokeWidth="2.5"
           aria-hidden="true"
         >
@@ -89,7 +100,7 @@ export function Scene({ definition: s }: { definition: SceneDefinition }) {
             >
               <path
                 d="m0 35 35-35M-10 10 10-10M25 45l20-20"
-                stroke="#c6ccbb"
+                stroke="#c4c6c9"
                 strokeWidth="1"
               />
             </pattern>
@@ -99,12 +110,13 @@ export function Scene({ definition: s }: { definition: SceneDefinition }) {
               height="30"
               patternUnits="userSpaceOnUse"
             >
-              <path d="m0 30 30-30" stroke="#d5d9cb" strokeWidth="1" />
+              <path d="m0 30 30-30" stroke="#d3d5d8" strokeWidth="1" />
             </pattern>
           </defs>
-          <g data-art="world">{art}</g>
+          <g data-art="camera-frame"><g data-art="world"><Environment id={s.id}/>{art}</g></g>
         </svg>
       </div>
+      {mobileNotes[s.id] && <div className={styles.mobileNote}>{mobileNotes[s.id]}</div>}
       {s.id === "arrival" && (
         <div className={styles.introBottom}>
           <span className={styles.scrollMark}>↓</span>
@@ -132,11 +144,11 @@ export function Scene({ definition: s }: { definition: SceneDefinition }) {
             strokeWidth="3"
             aria-hidden="true"
           >
-            <path d="M16 54h68v64H16Z" fill="#e1e3d7" />
+            <path d="M16 54h68v64H16Z" fill="#dee0e3" />
             <path d="M24 62h52v47H24Z" strokeWidth="1.5" />
             <path d="M32 84h36m-30 10h25" />
             <g data-handle="true">
-              <path d="M44 52V21h12v31" fill="#666e5c" />
+              <path d="M44 52V21h12v31" fill="#65676a" />
               <path d="M13 10h74v14H13Z" fill="#f45b3d" />
             </g>
             <path d="M35 72h30" stroke="#f45b3d" />
@@ -160,7 +172,7 @@ export function Scene({ definition: s }: { definition: SceneDefinition }) {
       <div className={styles.reducedCopy}>
         {s.capability ? (
           <>
-            <strong>{s.capability.name}</strong>
+            <strong>{String(s.capability.number).padStart(2, "0")} · {s.capability.name}</strong>
             <p>{s.capability.problem}</p>
             <p>{s.capability.explanation}</p>
             <p>{s.capability.result}</p>

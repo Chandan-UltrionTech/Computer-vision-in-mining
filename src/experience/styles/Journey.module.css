@@ -44,7 +44,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #63695d;
+  color: #636568;
   margin-bottom: 20px;
 }
 .part::before {
@@ -67,7 +67,7 @@
   line-height: 1.6;
   max-width: 345px;
   margin-top: 22px;
-  color: #686e60;
+  color: #67696c;
 }
 .scene[data-scene="arrival"] .title h1 {
   font-size: clamp(74px, 8.2vw, 132px);
@@ -546,4 +546,78 @@
   .detonator {
     bottom: 220px;
   }
+}
+
+/* Cinematic safe areas: quiet narration above, illustrated action below. */
+.scene:not([data-scene="arrival"]) .title {top:112px;left:4.6%;max-width:460px;}
+.scene:not([data-scene="arrival"]) .title h2 {font-size:clamp(28px,2.7vw,42px);line-height:1.03;letter-spacing:-1.5px;white-space:normal;max-width:440px;}
+.scene:not([data-scene="arrival"]) .title p {font-size:12px;line-height:1.6;max-width:340px;margin-top:12px;color:#747982;}
+.scene:not([data-scene="arrival"]) .part {font-size:10px;margin-bottom:12px;}
+.scene:not([data-scene="arrival"]):not([data-scene="drill"]):not([data-scene="excavation"]):not([data-scene="sorter"]) .part {display:none;}
+.art {top:66px;bottom:78px;height:calc(100% - 144px);}
+.scene[data-scene="arrival"] .art {top:65px;height:calc(100% - 130px);bottom:65px;}
+.scene[data-scene="arrival"] .title {top:17%;max-width:800px;}
+.scene[data-scene="arrival"] .title h1 {font-size:clamp(70px,6.7vw,108px);max-width:800px;}
+.scene[data-scene="arrival"] .title p {font-size:15px;color:#71757d;}
+.scene[data-scene="finale"] .art {top:160px;height:calc(100% - 245px);bottom:85px;}
+.scene[data-scene="finale"] .title h2 {font-size:40px;}
+.thesis {top:235px;font-size:14px;width:340px;color:#555c65;}
+.carrier {width:90px!important;height:80px!important;transform-origin:center;}
+.carrier[data-kind="seam"] {width:85vw!important;height:100px!important;}
+.carrier[data-kind="drone"] {width:150px!important;height:120px!important;}
+.scene [data-art="far"] {opacity:.5;}
+.scene:not([data-scene="arrival"]) [data-art="far"] {display:none;}
+.scene [data-art="world"]>g[data-art="environment"] {opacity:.9;}
+@media(min-width:768px) and (max-width:1024px){
+ .scene:not([data-scene="arrival"]) .title {top:105px;max-width:330px;}
+ .scene:not([data-scene="arrival"]) .title h2 {font-size:30px;}
+ .scene[data-scene="arrival"] .title h1{font-size:72px;}
+ .art {top:230px;height:calc(100% - 315px);bottom:85px;}
+ .scene[data-scene="arrival"] .art{top:220px;height:calc(100% - 310px);}
+}
+@media(max-width:767px){
+ .scene:not([data-scene="arrival"]) .title {top:267px;left:6%;right:6%;max-width:340px;}
+ .scene:not([data-scene="arrival"]) .title h2{font-size:27px;line-height:1.05;max-width:330px;letter-spacing:-1px;}
+ .scene:not([data-scene="arrival"]) .title p{font-size:11px;line-height:1.5;max-width:300px;margin-top:8px;}
+ .scene:not([data-scene="arrival"]) .part {display:none;}
+ .art {top:auto;bottom:76px;height:51%;width:195%;left:-52%;}
+ .scene[data-scene="arrival"] .art{top:auto;bottom:72px;height:52%;width:215%;left:-85%;}
+ .scene[data-scene="arrival"] .title{top:19%;}
+ .scene[data-scene="arrival"] .title h1{font-size:clamp(52px,16vw,78px);}
+ .scene[data-scene="core"] .art{top:auto;bottom:76px;height:48%;width:178%;left:-44%;}
+ .scene[data-scene="bucket"] .art{top:auto;bottom:76px;height:48%;width:175%;left:-40%;}
+ .scene[data-scene="driver"] .art{top:auto;bottom:76px;height:47%;width:205%;left:-80%;}
+ .scene[data-scene="finale"] .art{top:auto;bottom:85px;height:45%;width:153%;left:-26%;}
+ .scene[data-scene="finale"] .title{top:140px;}
+ .scene[data-scene="finale"] .title h2{font-size:34px;}
+ .thesis{top:225px;font-size:13px;left:6%;}
+ .scene [data-art="environment"] {opacity:.45;}
+ .scene [data-art="environment"]>g:last-child {display:none;}
+ .art svg text{font-size:20px;}
+ .scene[data-scene="bucket"] .art svg text{font-size:17px;}
+}
+@media(prefers-reduced-motion:reduce){
+ .scene:not([data-scene="arrival"]) .title {position:relative;top:auto;left:auto;padding:110px 5% 0;}
+ .art,.scene[data-scene="arrival"] .art,.scene[data-scene="core"] .art,.scene[data-scene="bucket"] .art,.scene[data-scene="driver"] .art,.scene[data-scene="finale"] .art{top:240px;bottom:auto;height:390px;}
+ .scene[data-scene="arrival"] .title{top:auto;}
+ .scene [data-art="camera-frame"]{transform:none!important;}
+ .reducedCopy{margin-top:420px;}
+}
+
+.mobileNote{display:none;}
+@media(min-width:768px) and (max-width:1024px){
+ .scene:not([data-scene="arrival"]) .title{max-width:calc(100% - 450px);}
+ .scene:not([data-scene="arrival"]) .title p{max-width:100%;}
+}
+@media(max-width:767px){
+ .art svg text{display:none;}
+ .mobileNote{display:block;position:absolute;bottom:76px;left:6%;right:6%;font-size:10px;line-height:1.4;color:#7b5145;pointer-events:none;background:var(--canvas);padding:6px 0;}
+ .scene[data-scene="survey"] .art{width:150%;left:-25%;height:49%;}
+ .scene[data-scene="thermal"] .art{width:170%;left:-34%;}
+ .scene[data-scene="froth"] .art{width:175%;left:-42%;}
+}
+@media(prefers-reduced-motion:reduce){.mobileNote{display:none;}}
+
+@media(min-width:768px) and (max-width:1024px){
+ .scene:not([data-scene="arrival"]):not([data-scene="finale"]) .art{width:128%;left:-14%;top:155px;height:calc(100% - 240px);}
 }

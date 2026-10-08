@@ -21,7 +21,7 @@ export function MineMap() {
       <path
         d="M69 684q120-43 172-131t292-8q150 16 215 73t247 12q180-73 328 49"
         fill="none"
-        stroke="#919b82"
+        stroke="#8f9194"
         strokeWidth="18"
       />
       <path
@@ -33,7 +33,7 @@ export function MineMap() {
       <path
         d="M69 684q120-43 172-131t292-8q150 16 215 73t247 12q180-73 328 49"
         fill="none"
-        stroke="#b6bfa6"
+        stroke="#b4b6b9"
         strokeWidth="2"
         strokeDasharray="9 12"
       />
@@ -44,7 +44,7 @@ export function MineMap() {
       <Truck x={601} y={557} scale={0.4} />
       <Truck x={298} y={624} scale={0.29} />
       <Place x={720} y={510} scale={0.5}>
-        <path d="M-50-70h150l-30 67H-23ZM-23-3h93v88h-93Z" fill="#d4dac6" />
+        <path d="M-50-70h150l-30 67H-23ZM-23-3h93v88h-93Z" fill="#d1d3d6" />
         <path
           d="m-23 20 30 12-10 21 16 26m57-59-30 12 10 21-16 26"
           fill="none"
@@ -58,7 +58,7 @@ export function MineMap() {
       <Tank x={1130} y={617} scale={0.32} />
       <Tank x={1310} y={586} scale={0.25} />
       <Pile x={796} y={716} width={275} rows={4} />
-      <path d="m1295 471-268 199 8 14 268-202Z" fill="#c9d0bb" />
+      <path d="m1295 471-268 199 8 14 268-202Z" fill="#f97832" />
       <path
         d="m1086 638 2 63m65-111 13 90m58-140 17 93"
         fill="none"
@@ -66,7 +66,7 @@ export function MineMap() {
       />
       <Drone x={858} y={330} scale={0.65} />
       <Camera x={918} y={537} scale={0.35} />
-      <g fill="#626d56" stroke="none" fontSize="17">
+      <g fill="#626467" stroke="none" fontSize="17">
         <text x="146" y="481">
           drill & geology
         </text>
@@ -85,7 +85,7 @@ export function MineMap() {
         <text x="1150" y="702">
           recover
         </text>
-        <text x="870" y="755">
+        <text x="870" y="730">
           stockpile
         </text>
       </g>
@@ -96,10 +96,6 @@ export function MineMap() {
         stroke="#f45b3d"
         strokeWidth="2"
       >
-        <path
-          d="M198 431q127-94 245 68t157 53q85-83 170-4t141 4q154-68 214 62t-175 86M441 499q186-192 417-166t253 140"
-          strokeDasharray="4 7"
-        />
         {[
           [198, 431],
           [305, 426],

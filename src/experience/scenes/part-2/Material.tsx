@@ -18,11 +18,11 @@ function ExcavationWorld() {
     <>
       <Mountains />
       <MineFace x={650} y={20} scale={0.6} />
-      <Pile x={825} y={644} width={470} rows={3} />
+      <Pile x={155} y={625} width={1050} rows={5} />
       <Excavator x={755} y={528} scale={1.05} />
       <Truck x={415} y={621} scale={0.8} />
       <Worker x={420} y={493} scale={0.75} />
-      <path d="M130 692q430-54 1110-1" fill="none" stroke="#a0a895" />
+      <path d="M130 692q430-54 1110-1" fill="none" stroke="#9fa1a4" />
     </>
   );
 }
@@ -49,26 +49,26 @@ function BeltWorld() {
 function Cab() {
   return (
     <>
-      <path d="M180 388q460-122 1030 0l91 201H111Z" fill="#e2e5d8" />
+      <path d="M180 388q460-122 1030 0l91 201H111Z" fill="#f97832" />
       <path d="M210 396q375-106 851-24l93 166H157Z" fill="#faf8f2" />
       <path
         d="M541 531 739 382l177 159M580 530l124-105m83 5 87 101"
         fill="none"
-        stroke="#8e9880"
+        stroke="#8d8f92"
       />
       <path
         d="m245 429 72-19 75 17m-48 64 64-21 63 17m434-81 97 34"
         fill="none"
-        stroke="#c0c6b4"
+        stroke="#bec0c3"
       />
       <path d="M180 388 144 616M1193 380l105 231" strokeWidth="15" />
-      <path d="M121 562q555-62 1175 0v131H121Z" fill="#8a9480" />
-      <path d="M231 605h374v41H231Z" fill="#d3d9c9" />
+      <path d="M121 562q555-62 1175 0v131H121Z" fill="#42464d" />
+      <path d="M231 605h374v41H231Z" fill="#d2d4d7" />
       {[260, 325, 390, 455, 520].map((x) => (
         <circle key={x} cx={x} cy="627" r="12" fill="#faf8f2" />
       ))}
-      <path d="M908 709v-158q18-60 102-60t95 60v158Z" fill="#414a36" />
-      <path d="M920 694v-154q96-92 170 0v154" fill="#c5cdba" />
+      <path d="M908 709v-158q18-60 102-60t95 60v158Z" fill="#24262b" />
+      <path d="M920 694v-154q96-92 170 0v154" fill="#c4c6c9" />
       <g data-art="head">
         <path
           d="M973 443q-22-59 22-73 48-8 61 47l-6 31-28 20-20-5Z"
@@ -76,7 +76,7 @@ function Cab() {
         />
         <path
           d="M969 397q-6-52 32-46 44-6 56 43l-26-14-25 18Z"
-          fill="#464e3b"
+          fill="#24262b"
         />
         <path d="m1018 412 10 18-14 6m-5 13 17 2" fill="none" strokeWidth="2" />
         <g data-art="eyelids">
@@ -91,7 +91,7 @@ function Cab() {
       />
       <ellipse cx="882" cy="597" rx="93" ry="31" fill="none" strokeWidth="13" />
       <path d="M882 581v43m-76-25 77 8 79-14" fill="none" strokeWidth="7" />
-      <path d="M704 570h92v69h-92Z" fill="#eceee2" />
+      <path d="M704 570h92v69h-92Z" fill="#e9ebee" />
       <g data-art="cv" className="cv-layer" fill="none" stroke="#f45b3d">
         <path d="M990 411h48l-20 22-11 15 17 3M1018 431l-12-20" />
         {[
@@ -116,7 +116,7 @@ function Cab() {
         <path d="M1055 450h15M1058 415h12" />
       </g>
       <Camera x={580} y={380} scale={0.6} />
-      <text x="240" y="725">
+      <text x="240" y="680">
         time, repetition, attention
       </text>
     </>
@@ -130,13 +130,12 @@ export function Material({ id }: { id: SceneId }) {
         {id === "safety" && (
           <g data-art="cv" className="cv-layer" stroke="#f45b3d" fill="none">
             <ellipse cx="817" cy="596" rx="260" ry="65" strokeDasharray="8 9" />
-            <path d="M394 409h57v141h-57ZM467 496h246m-246-6v12m246-12v12" />
-            <text x="485" y="479" fill="#c4472d" stroke="none">
-              closing distance · illustrative
-            </text>
-            <text x="352" y="389" fill="#c4472d" stroke="none">
-              helmet ✓ · vest ✓
-            </text>
+            <g data-art="worker-track">
+              <path d="M394 409h57v141h-57Z" />
+              <text x="352" y="389" fill="#c4472d" stroke="none">helmet / vest verified</text>
+            </g>
+            <path data-art="distance-line" d="M590 558H790m-200-6v12m200-12v12" strokeDasharray="4 6"/>
+            <text x="587" y="540" fill="#c4472d" stroke="none">closing distance</text>
             <text x="748" y="674" fill="#c4472d" stroke="none">
               exclusion boundary
             </text>
@@ -154,46 +153,48 @@ export function Material({ id }: { id: SceneId }) {
   if (id === "bucket")
     return (
       <>
-        <Mountains />
+        <g data-art="bucket-context"><ExcavationWorld /></g>
         <Pile x={800} y={660} width={460} rows={3} />
         <g data-art="bucket-close">
+          <path d="M780 349 1090 220l-22-30-320 116Z" fill="#f97832" strokeWidth="5"/>
+          <path d="M797 323 1049 216" stroke="#17191c" strokeWidth="8"/><path d="M797 323 1049 216" stroke="#d8dbde" strokeWidth="3"/>
           <path
             d="M375 365q249-100 449-21l-55 209-290 67-152-127Z"
-            fill="#777e6d"
+            fill="#41454b"
           />
           <path
             d="M396 386q190-75 405-19l-48 169-264 59-116-112Z"
-            fill="#9ea58f"
+            fill="#7e838b"
           />
           <path
             d="m405 395 70 181m-3-198 65 191m5-204 56 190m15-203 35 187m38-200 13 184"
             fill="none"
-            stroke="#d9ddce"
+            stroke="#d7d9dc"
             strokeWidth="4"
           />
           {[421, 488, 554, 688, 754].map((x) => (
-            <path key={x} d={`m${x} 570-12 65 30 12 20-64Z`} fill="#dbddcf" />
+            <path key={x} d={`m${x} 570-12 65 30 12 20-64Z`} fill="#d8dadd" />
           ))}
-          <path d="m617 568-7 17 24 6 9-16Z" fill="#595e51" />
+          <path d="m617 568-7 17 24 6 9-16Z" fill="#585a5d" />
           <Rock x={615} y={426} size={2.5} />
           <g data-art="good-load">
             <Rock x={425} y={444} />
             <Rock x={768} y={418} size={1.2} />
           </g>
         </g>
-        <Camera x={1015} y={410} />
+        <Truck x={1160} y={622} scale={.7}/><Camera x={1015} y={410} />
         <g data-art="cv" className="cv-layer" fill="none" stroke="#f45b3d">
-          <path d="M549 389 560 352 611 341 671 364 690 420 665 479 575 482 548 440Z" />
-          <path d="M603 566h52v51h-52Z" strokeDasharray="4 5" />
-          <path d="M630 612v62h171M687 427h196l32-38" />
-          <text x="810" y="678" fill="#c4472d" stroke="none">
+          <path data-cv-beat="boulderDetected" d="M549 389 560 352 611 341 671 364 690 420 665 479 575 482 548 440Z" />
+          <path data-cv-beat="abnormalToothFound" d="M603 566h52v51h-52Z" strokeDasharray="4 5" />
+          <path d="M630 612v38h171M687 427h196l32-38" />
+          <text data-cv-beat="abnormalToothFound" x="810" y="654" fill="#c4472d" stroke="none">
             abnormal tooth geometry
           </text>
-          <text x="921" y="387" fill="#c4472d" stroke="none">
+          <text data-cv-beat="boulderDetected" x="921" y="387" fill="#c4472d" stroke="none">
             oversize boulder
           </text>
           {[438, 505, 571, 705, 771].map((x) => (
-            <text key={x} x={x} y="678" fill="#c4472d" stroke="none">
+            <text data-cv-beat="healthyTeethPass" key={x} x={x} y="654" fill="#c4472d" stroke="none">
               ✓
             </text>
           ))}
@@ -209,12 +210,12 @@ export function Material({ id }: { id: SceneId }) {
           <path
             d="M-190 693Q130 492 553 576t1080-1M-180 737Q200 565 600 623t1040-15"
             fill="none"
-            stroke="#878f79"
+            stroke="#85878a"
             strokeWidth="3"
           />
           <path
             d="M-180 716Q150 530 570 600t1080-1"
-            stroke="#b4bd9f"
+            stroke="#b0b2b5"
             strokeDasharray="35 24"
             fill="none"
           />
@@ -235,18 +236,18 @@ export function Material({ id }: { id: SceneId }) {
         <Mountains />
         <Plant x={1178} y={472} scale={0.7} />
         <Truck x={448} y={373} scale={1.1} />
-        <path d="M642 417h345l-66 113H707Z" fill="#bdc5ad" />
-        <path d="M707 530v132h214V530" fill="#535f46" />
+        <path d="M642 417h345l-66 113H707Z" fill="#f97832" />
+        <path d="M707 530v132h214V530" fill="#303238" />
         <g data-art="jaw-left">
           <path
             d="M696 534 773 551 752 569 786 590 753 607 784 626 720 661Z"
-            fill="#c8ceba"
+            fill="#c5c7ca"
           />
         </g>
         <g data-art="jaw-right">
           <path
             d="M930 536 853 551 874 569 840 590 873 607 842 626 911 661Z"
-            fill="#c8ceba"
+            fill="#c5c7ca"
           />
         </g>
         <g data-art="crusher-rock">
@@ -268,6 +269,7 @@ export function Material({ id }: { id: SceneId }) {
     return (
       <>
         <BeltWorld />
+        <Worker x={471} y={273} scale={.38}/>
         <path
           d="M335 379v-42h301v42M349 337v-24h271v24M349 322h271"
           fill="none"
@@ -283,23 +285,23 @@ export function Material({ id }: { id: SceneId }) {
         <g data-art="tool">
           <path
             d="m605 545-39-21q-13 5-23-5l-7-14 12 3 9 9 11-13-5-11-10-8q23-5 32 18l39 24 9-4 8 8-2 15-13 3-8-9Z"
-            fill="#8e9781"
+            fill="#8d8f92"
             strokeWidth="3"
           />
         </g>
         <g data-art="cv" className="cv-layer" stroke="#f45b3d" fill="none">
-          <g data-art="detection">
+          <g data-art="detection" data-cv-beat="objectDetected">
             <path d="M528 476h99v86h-99Z" strokeDasharray="185 9" />
             <text x="533" y="442" fill="#c4472d" stroke="none">
               foreign object
             </text>
           </g>
-          <path d="M703 505h376m-376-6v12m376-12v12" strokeDasharray="4 5" />
+          <path data-cv-beat="downstreamRisk" d="M703 505h376m-376-6v12m376-12v12" strokeDasharray="4 5" />
           <text x="916" y="486" stroke="none" fill="#c4472d">
             toward crusher
           </text>
           <path d="M1189 384h22v25h-22Z" fill="#f45b3d" />
-          <text x="1050" y="365" stroke="none" fill="#c4472d">
+          <text data-cv-beat="alertTriggered" x="1050" y="365" stroke="none" fill="#c4472d">
             operator alert / belt stop
           </text>
         </g>

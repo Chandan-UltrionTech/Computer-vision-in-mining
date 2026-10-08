@@ -1,57 +1,42 @@
-# Implementation checkpoint
+# Cinematic remediation — 8 October 2026
 
-## Source review
-- Read all three narrative documents and the complete attached brief.
-- Inspected all six PNG references. Source directories remain unchanged.
-- No existing application or package manager found; using npm.
+Status: second implementation pass in progress. Previous completion claims are superseded.
 
-## Design / architecture
-- Warm paper #faf8f2, ink #20221f, graphite #73766f, coral #f45b3d, light rock #deded5.
-- Large condensed industrial headings; compact engineering annotations.
-- Sticky illustrated stage with modular scenes, local GSAP timelines, first-class physical handoffs.
-- Central typed registry sets ordering, scroll lengths, semantic beats, anchors, and responsive timelines.
-- Lenis runs on the GSAP ticker. Zustand receives discrete narrative changes only.
-- SVG carries all meaningful artwork. Small finite particle fields do not require Canvas.
+Reference review: six PNGs and all three narrative authorities inspected; original stack retained.
+Baseline: reproduced React hydration warning from unrounded SVG trigonometric coordinates.
+Current: rebuilding shared illustration language, scene clocks, capsule and coordinate-based transitions.
+QA: baseline desktop captured; redesigned desktop/tablet/mobile and reverse scroll pending.
 
-## Execution plan
-- [x] Scaffold and install the locked stack.
-- [x] Build controller, registry, semantic state and persistent HUD.
-- [x] Draw reusable layered machinery, geology, processing and sensor artwork.
-- [x] Build Part I including core/seam transition and interactive blast.
-- [x] Build Part II including worker retreat, bucket condition, cab, crusher and conveyor response.
-- [x] Build Part III including keep/reject, slurry, froth, reconstruction, thermal wipe and whole mine.
-- [x] Build post-story workflow planner and deployment pipeline.
-- [x] Verify desktop, mobile, reduced motion, toggles and reversible scroll.
-- [x] Run lint, tests and production build; fix defects.
+Checkpoint 2:
+- Original numbers 01-12, permanent capability identity, dormant eye marker, layered copy transitions.
+- Per-scene semantic clocks and delayed confirmation after physical movement.
+- Coordinate-based camera overlap shots replace panel slides; incoming timelines run during transitions.
+- Mining primitives have silhouette strokes, machine details, orange PPE, five rock families and neutral rock fills.
+- Geological benches, infrastructure, service pipes, gantries, workers and terrain evolve across the operation.
+- Mobile subject framing, shorter routes, compact annotation strip; reduced-motion identities preserved.
+- Rounded trigonometric SVG values removed the reproduced hydration warning; screenshot audit reported zero console errors.
+- First lint and production build pass. Browser rerun exposed invisible incoming panels intercepting clicks; fixed with inert and pointer-events management. Final verification pending.
 
-## Current work
-Implementation and verification complete. Preview runs at http://localhost:3000.
+Final implementation checkpoint — 8 October 2026:
+- Parts I, II and III redesigned, including whole-mine payoff and CV toggle comparison.
+- Fixed world coordinates retain the muckpile across fragmentation/excavation and keep the conveyor stable across hazard/sizing. Worker tracking follows approach and retreat.
+- Aperture masks for cab entry/exit and slurry; bottom reveal for crusher discharge; close rock occlusion for the blast; extended core seam and continued drone flight. Incoming timelines pre-roll and maintain that progress at activation, preventing a boundary reset.
+- One animation authority for blasting: detonator advances the scroll clock; wheel/touch interrupts; replay seeks the same timeline. No independent cloud/debris click animation remains.
+- Inactive scenes are inert and reject pointer events, fixing invisible scene layers blocking controls. Match-media cleanup restores accessible static scenes.
+- SVG trigonometry rounded to two decimals fixed the reproduced React hydration issue, rather than hiding the development indicator.
 
-## Verification — 8 October 2026
-- `npm run lint`: pass, no warnings or errors.
-- `npm run build`: pass; TypeScript checked and production routes generated.
-- `npm test`: 3 narrative-state tests pass.
-- `npm run test:browser`: all 5 browser scenarios pass. Final desktop regression also passes after annotation adjustments and hiding scan sweeps with CV OFF.
-- Complete 360-sample forward/reverse scroll, including every scene handoff and the final exit.
-- Viewports: 1440×900, 1024×768, 768×1024, 390×844 and 320×720.
-- Detonator, chronological capsule states, tool fall/travel/removal, CV toggle, pilot brief/download, restart, live resizing, live motion-preference changes and wheel input checked.
-- Desktop/mobile/reduced-motion screenshots inspected. No browser runtime exceptions in the tested journeys.
-- `npm audit --omit=dev`: zero vulnerabilities.
+Verification:
+- npm run lint: PASS.
+- npm test: PASS, four tests for original numbering, physical/result ordering, reversal and transition contracts.
+- npm run build: PASS, TypeScript and static route generation.
+- npm run test:browser: PASS, six scenarios, including complete desktop interaction, 360 forward/reverse samples, resize/motion-preference cleanup, 390/320/768/1024 responsive widths, reduced motion, CV OFF/ON and persistent case identity.
+- Desktop scene review at 1440x900, tablet 768x1024 and mobile 390x844. Safe regions, readable identity, different overlay grammars and physical handoffs inspected.
+- Transition review sampled core, blast, muckpile, cab, same-belt and aerial boundaries.
+- Bounded headless Chromium survey performance sample: 150 frames; median and p95 about 16.7 ms; no long tasks or application console errors. This is a test-machine measurement, not a physical-device guarantee.
 
-## Defects corrected during verification
-- Finale tried to transition toward a nonexistent next scene; it now remains until native document scrolling exits the stage.
-- Journey route was outside controller query scope; its continuous progress now updates correctly.
-- Final thesis had a zero-width absolute container; explicit width restores readable wrapping.
-- Mobile reduced-motion headings inherited a right offset; corrected to normal-flow alignment.
-- Annotation locations adjusted to clear headlines and worker geometry.
-- CV overlays start dormant; CV OFF also suppresses scan sweeps.
-- Visible-scene idle motion pauses for conveyor intervention and outside the journey.
+Remaining verification boundaries:
+- Physical-device Safari/Firefox and low-end mobile GPU testing remain unverified.
+- Mobile secondary SVG text is intentionally replaced by a compact annotation strip; full capability explanation is available in reduced-motion copy and the transcript.
+- Finite SVG fields remain appropriate at the measured complexity. No Canvas/WebGL dependency was added; active-only ambient timelines still pause outside the journey.
 
-## Production boundaries / remaining limitations
-- Illustrative SVG experience, not live mine telemetry or a deployed CV/control system.
-- Real deployments require site imagery, calibration, model validation, approved event thresholds and operator/PLC integration.
-- No additional production artwork is required to run this website.
-- An upstream `braces` advisory remains in the development-only Next ESLint dependency chain; no fixed braces release is available. Production dependency audit is clean.
-- Browser automation used Chromium; physical-device Safari/Firefox testing is outside the verified matrix.
-
-
+Final responsive framing pass: tablet art reduced to 128% to retain edge callouts; mobile finale adds a centered pullback to reveal the complete mine. Lint, four unit tests, production build and all six browser scenarios re-passed after these changes.

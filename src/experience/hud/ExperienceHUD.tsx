@@ -23,7 +23,7 @@ export function ExperienceHUD() {
             <path d="m11 15 2 8 6 3m8-23-1 16 8 7" />
             <path d="m19 26 7-7" stroke="#f45b3d" strokeWidth="3" />
           </svg>
-          Ultrion<span>A field guide to mining intelligence</span>
+          Ultrion
         </a>
         <div className={styles.right}>
           <a className={styles.about} href="#deployment">

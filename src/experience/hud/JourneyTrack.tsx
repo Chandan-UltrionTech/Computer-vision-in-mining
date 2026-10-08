@@ -8,6 +8,7 @@ export function JourneyTrack() {
     part = useExperience((s) => s.part),
     inJourney = useExperience((s) => s.inJourney);
   const index = sceneRegistry.findIndex((s) => s.id === scene);
+  const stages = ["drill","blast","excavation","haul","crusher","conveyor","sorter","froth","survey","thermal"];
   return (
     <div
       className={`${styles.track} ${!inJourney ? styles.hidden : ""}`}
@@ -34,14 +35,12 @@ export function JourneyTrack() {
       <div className={styles.route}>
         <div className={styles.fill} data-rail-fill />
         <div className={styles.nodes}>
-          {sceneRegistry.map((s, i) => (
-            <i key={s.id} data-passed={i <= index} />
+          {stages.map((id) => (
+            <i key={id} data-passed={sceneRegistry.findIndex(scene => scene.id === id) <= index} />
           ))}
         </div>
       </div>
-      <div className={styles.hint}>
-        The mining process is the path. Intelligence appears along the way.
-      </div>
+
     </div>
   );
 }

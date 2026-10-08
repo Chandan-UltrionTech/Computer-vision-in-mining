@@ -1,18 +1,22 @@
 @import "lenis/dist/lenis.css";
 :root {
-  --canvas: #faf8f2;
-  --ink: #20221f;
-  --secondary: #73766f;
-  --accent: #f45b3d;
+  --canvas: #fcfaf5;
+  --ink: #17191c;
+  --secondary: #71757d;
+  --accent: #ff4d43;
   --accent-dark: #b53d25;
   --warning: #b53d25;
-  --muted: #e8e8df;
-  --border: #d3d5c9;
+  --muted: #e7e8eb;
+  --border: #d8d9dd;
   --shadow: 0 12px 38px #20221f12;
   --display: "Arial Narrow", "Franklin Gothic Medium", Impact, sans-serif;
   --body: Arial, Helvetica, sans-serif;
   --annotation: 18px;
   --stroke: 2.5;
+  --machine: #f97832;
+  --rock: #d8dbde;
+  --hud-top: 92px;
+  --hud-bottom: 78px;
   --space: 8px;
   --radius: 28px;
 }
@@ -75,7 +79,7 @@ svg text {
   letter-spacing: 0.1px;
 }
 svg text:not([fill]) {
-  fill: #626d56;
+  fill: #626872;
 }
 svg .hand-note {
   font-style: italic;

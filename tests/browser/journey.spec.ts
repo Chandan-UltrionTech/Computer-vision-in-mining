@@ -79,6 +79,7 @@ test("desktop complete journey, semantic events and interactions", async ({
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
+  page.on("console", m => {if(m.type() === "error" || m.type() === "warning") errors.push(m.text())});
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   await page.waitForLoadState("networkidle");
@@ -190,6 +191,7 @@ test("continuous forward and reverse scroll covers every physical handoff", asyn
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
+  page.on("console", m => {if(m.type() === "error" || m.type() === "warning") errors.push(m.text())});
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   await page.waitForLoadState("networkidle");
@@ -240,6 +242,7 @@ test("mobile and intermediate widths keep the full narrative usable", async ({
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
+  page.on("console", m => {if(m.type() === "error" || m.type() === "warning") errors.push(m.text())});
   for (const [width, height] of [
     [390, 844],
     [320, 720],
@@ -301,4 +304,17 @@ test("reduced motion exposes static illustrations and semantic explanations", as
   await expect(
     page.getByRole("button", { name: "Replay illustrated blast" }),
   ).toHaveAttribute("aria-pressed", "true");
+});
+
+
+test("numbered identity persists through the conveyor intervention and reverses",async({page})=>{
+ await page.setViewportSize({width:1440,height:900});
+ await page.goto('/');await page.waitForLoadState('networkidle');
+ for(const [p,state] of [[.34,'problem'],[.45,'observing'],[.6,'solution'],[.8,'action'],[.95,'result'],[.8,'action'],[.45,'observing']] as const){
+  await jump(page,'conveyor',p);await page.waitForTimeout(450);
+  const capsule=page.locator('[data-state]');
+  await expect(capsule).toHaveAttribute('data-state',state);
+  await expect(capsule).toContainText('07');
+  await expect(capsule).toContainText('Conveyor foreign-object & oversize detection');
+ }
 });

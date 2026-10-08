@@ -1,7 +1,7 @@
 import { Belt, Drone, Rock, Truck } from "../illustrations/Primitives";
 import styles from "../styles/Journey.module.css";
 
-/** One moving carrier bridges each pair of worlds; only its current physical form is painted. */
+/** A coordinate-projected prop for selected shots; camera overlap owns continuity. */
 export function PhysicalHandoff() {
   return (
     <div className={styles.carrier} data-carrier aria-hidden="true">
@@ -21,7 +21,7 @@ export function PhysicalHandoff() {
         strokeWidth="2.5"
       >
         <Truck />
-        <path d="M-240 92h590m-590 16h590" stroke="#909b80" />
+        <path d="M-240 92h590m-590 16h590" stroke="#8e9093" />
       </svg>
       <svg
         data-handoff="belt"
@@ -36,7 +36,7 @@ export function PhysicalHandoff() {
         ))}
       </svg>
       <svg
-        data-handoff="seam"
+        data-handoff="seam" className="cv-layer"
         viewBox="0 0 1400 60"
         fill="none"
         stroke="#f45b3d"
@@ -49,12 +49,12 @@ export function PhysicalHandoff() {
         data-handoff="water"
         viewBox="0 0 1400 100"
         fill="none"
-        stroke="#909c7d"
+        stroke="#8e9093"
         strokeWidth="3"
       >
         <path
           d="M-20 38q70-45 140 0t140 0 140 0 140 0 140 0 140 0 140 0 140 0 140 0 180 0v90H-20Z"
-          fill="#d3dac6"
+          fill="#d1d3d6"
         />
       </svg>
       <svg

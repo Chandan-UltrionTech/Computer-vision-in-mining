@@ -1,6 +1,6 @@
 import type { gsap } from "gsap";
 export type NarrativeState =
-  "normal" | "problem" | "observing" | "solution" | "result";
+  "normal" | "problem" | "observing" | "solution" | "action" | "result";
 export type SceneId =
   | "arrival"
   | "drill"
@@ -34,9 +34,10 @@ export type SceneTimeline = (
   mode: Choreography,
 ) => gsap.core.Timeline;
 export interface Capability {
+  number: number;
   name: string;
   problem: string;
-  observes: string;
+  observing: string;
   explanation: string;
   result: string;
 }
@@ -53,22 +54,4 @@ export interface SceneDefinition {
   capability?: Capability;
   desktopTimeline: SceneTimeline;
   mobileTimeline: SceneTimeline;
-}
-export const BEATS = {
-  problem: 0.2,
-  observing: 0.39,
-  solution: 0.53,
-  result: 0.76,
-  dormant: 0.92,
-} as const;
-export function narrativeAt(
-  progress: number,
-  hasCapability: boolean,
-): NarrativeState {
-  if (!hasCapability || progress < BEATS.problem || progress >= BEATS.dormant)
-    return "normal";
-  if (progress < BEATS.observing) return "problem";
-  if (progress < BEATS.solution) return "observing";
-  if (progress < BEATS.result) return "solution";
-  return "result";
 }

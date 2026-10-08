@@ -1,21 +1,24 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { narrativeAt, BEATS } from "../src/experience/core/types";
-test("physical operation precedes CV observation and explanation", () => {
-  assert.equal(narrativeAt(0.1, true), "normal");
-  assert.equal(narrativeAt(BEATS.problem, true), "problem");
-  assert.equal(narrativeAt(BEATS.observing, true), "observing");
-  assert.equal(narrativeAt(BEATS.solution, true), "solution");
-  assert.equal(narrativeAt(BEATS.result, true), "result");
-  assert.equal(narrativeAt(BEATS.dormant, true), "normal");
+import { storyAt, storyBeats } from "../src/experience/core/storyBeats";
+import { capabilities, sceneRegistry } from "../src/experience/core/sceneRegistry";
+import { transitionShots } from "../src/experience/transitions/choreography";
+test("source identities survive physical journey order",()=>{
+ assert.deepEqual(Object.values(capabilities).map(cap=>cap.number).sort((a,b)=>a-b),[1,2,3,4,5,6,7,8,9,10,11,12]);
+ assert.deepEqual(sceneRegistry.filter(s=>s.capability).slice(3,6).map(s=>s.capability!.number),[6,4,5]);
 });
-test("physical transition scenes do not fabricate CV events", () => {
-  for (const progress of [0, 0.25, 0.5, 0.75, 1])
-    assert.equal(narrativeAt(progress, false), "normal");
+test("results confirm completed physical consequences",()=>{
+ for(const [id, finished] of Object.entries({bucket:.91,driver:.90,conveyor:.90,sorter:.89,safety:.86,survey:.90,thermal:.79})){
+  const beats=storyBeats[id as keyof typeof storyBeats]!;
+  assert.ok(beats.find(b=>b.state==='result')!.at>finished,id);
+ }
 });
-test("reverse scroll restores the problem before the solution", () => {
-  assert.deepEqual(
-    [0.85, 0.6, 0.45, 0.3, 0.1].map((p) => narrativeAt(p, true)),
-    ["result", "solution", "observing", "problem", "normal"],
-  );
+test("scene clocks reverse without persistent semantic side effects",()=>{
+ assert.deepEqual([.95,.8,.6,.45,.34,.1].map(p=>storyAt('conveyor',p)),['result','action','solution','observing','problem','normal']);
+ for(const scene of sceneRegistry) assert.equal(storyAt(scene.id,0),'normal');
+});
+test("physical shots have different durations and source coordinates",()=>{
+ assert.ok(new Set(Object.values(transitionShots).map(s=>s.start)).size>8);
+ assert.equal(transitionShots.conveyor!.kind,'sameBelt');
+ assert.deepEqual(transitionShots.crusher!.from,[828,650]);
 });

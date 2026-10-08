@@ -18,24 +18,29 @@ export function Rock({
   y = 0,
   size = 1,
   accent = false,
+  variant,
 }: {
   x?: number;
   y?: number;
   size?: number;
   accent?: boolean;
+  variant?: number;
 }) {
+  const shapes = ["M-24 5 -16-14 0-25 17-13 27 9 17 24-13 22Z", "M-28 9-19-11-3-23 19-17 25 4 13 25-11 21Z", "M-25-3-7-27 14-22 29 2 16 22-9 26-29 12Z", "M-23 12-21-9 4-24 23-8 28 16 1 25Z", "M-30 6-13-19 9-26 25-6 20 18-6 27-25 20Z"];
+  const v = variant ?? Math.abs(Math.round(x * 3 + y)) % shapes.length;
   return (
     <Place x={x} y={y} scale={size}>
       <path
-        d="M-24 5 -16-14 0-25 17-13 27 9 17 24-13 22Z"
-        fill={accent ? "#f9dfcf" : "#deded5"}
+        d={shapes[v % shapes.length]}
+        strokeWidth="3.4"
+        fill={accent ? "#ffdfc7" : ["#d8dbde", "#aeb3ba", "#eff0f0", "#c4c7cc", "#9298a0"][v % 5]}
       />
       <path
         d="m-16-14 10 17 23-16M-6 3l-7 19M-6 3l23 21M-17 10l4 5M5-15l3 5M15 7l5 4"
         fill="none"
         strokeWidth="1.5"
       />
-      <path d="m-19 3 4 2m22 8 2 3m-7-9 3 1" stroke="#85877f" strokeWidth="2" />
+      <path d="m-19 3 4 2m22 8 2 3m-7-9 3 1" stroke="#848689" strokeWidth="2" />
       {accent && (
         <path
           d="m-13-16 8 18 17 9"
@@ -65,7 +70,8 @@ export function Pile({
           Array.from({ length: Math.floor(width / 55) - row * 2 }, (_, i) => (
             <Rock
               key={`${row}-${i}`}
-              x={i * 55 + row * 55}
+              variant={i + row * 3}
+              x={i * 55 + row * 55 + (i % 3) * 4}
               y={-row * 39 + (i % 3) * 7}
               size={0.85 + (i % 4) * 0.14}
             />
@@ -87,7 +93,7 @@ export function Camera({
   return (
     <Place x={x} y={y} scale={scale}>
       <path d="M0 0v-75h25" fill="none" />
-      <path d="m12-91 52 5-4 28-49-5Z" fill="#ecebe4" />
+      <path d="m12-91 52 5-4 28-49-5Z" fill="#f97832" />
       <path d="m57-84 12 3-3 20-11-3Z" fill="#343832" />
       <circle cx="61" cy="-73" r="5" fill="#f45b3d" />
       <path d="m17-84 22 2m-25 15 14 1" strokeWidth="1.5" />
@@ -114,9 +120,9 @@ export function Drone({
 }) {
   return (
     <Place x={x} y={y} scale={scale}>
-      <g data-art="drone">
+      <g data-art="drone" strokeWidth="3.4">
         <path d="m-46 0 28 9m36 0 28-9M-18 10l-11 16m46-16 11 16" />
-        <ellipse cx="0" cy="7" rx="24" ry="10" fill="#ecebe4" />
+        <ellipse cx="0" cy="7" rx="24" ry="10" fill="#f97832" />
         <path d="M-19 7q19 6 38 0" fill="none" />
         <rect x="-8" y="17" width="16" height="13" rx="5" fill="#353932" />
         <circle cx="0" cy="23" r="3" fill="#f45b3d" />
@@ -158,23 +164,17 @@ export function Worker({
 }) {
   return (
     <Place x={x} y={y} scale={scale}>
-      <g data-art="worker">
-        <path
-          d="m-12-4-4 58-10 13m38-71 5 57 10 13"
-          fill="none"
-          strokeWidth="10"
-        />
-        <path d="M-22-8-17-53q17-16 34 0L22-8Z" fill="#777c71" />
-        <path d="M-19-36h37M0-59v49" stroke="#faf8f2" strokeWidth="5" />
-        <path
-          d="m-18-49-17 30 8 15M19-49l16 19-9 21"
-          fill="none"
-          strokeWidth="8"
-        />
-        <ellipse cx="0" cy="-74" rx="15" ry="18" fill="#faf8f2" />
-        <path d="M-22-78q2-25 22-25t22 25ZM-27-78h54" fill="#e5e4db" />
-        <path d="M0-102v19M7-70l4 2" fill="none" strokeWidth="2" />
-        <path d="m-16 66-13 2m45-2 14 2" strokeWidth="7" />
+      <g data-art="worker" strokeWidth="3.4">
+        <g data-art="legs"><path d="m-14-5-4 56-7 14h18l9-63 5 62h19l-11-68Z" fill="#202227"/><path d="m-24 64-10 5q-3 7 7 7h15v-12m18 0 16 4 5 7H6Z" fill="#17191c"/></g>
+        <path data-art="body" d="M-24-8-23-49q5-15 20-18 18-3 29 12l-3 47Z" fill="#202227"/>
+        <path data-art="vest" d="M-15-61-5-66 9-64l12 15-4 43h-35l-3-41Z" fill="#f97832"/>
+        <path d="M-13-59v42m22-43v42M-18-25h37" stroke="#fcfaf5" strokeWidth="5"/>
+        <path d="M-14-57v33M10-58v34" stroke="#17191c" strokeWidth="1"/>
+        <g data-art="arms"><path d="m-22-48-10 29 14 15M22-48l12 20-12 22" fill="none" strokeWidth="11"/><path d="m-17-6 5 5m34-9-5 5" stroke="#fcfaf5" strokeWidth="5"/></g>
+        <path data-art="face" d="M-13-88q11-13 25-1l2 13 5 5-6 3-2 11q-18 4-24-13Z" fill="#fcfaf5"/>
+        <path d="M-15-81q7 8 17 0v13l-6 4-10-6Z" fill="#17191c"/>
+        <path d="m6-75 2 0m1 10 4 1" strokeWidth="1.8"/>
+        <g data-art="helmet"><path d="M-22-80q-1-23 19-25 21-2 26 24l-22 6Z" fill="#f97832"/><path d="M-27-80q26 6 54-1l-1 6q-28 7-51 0Z" fill="#fcfaf5"/><path d="M-4-102v18m7-18 4 17" strokeWidth="1.5"/></g>
       </g>
     </Place>
   );
@@ -190,25 +190,26 @@ export function Drill({
 }) {
   return (
     <Place x={x} y={y} scale={scale}>
-      <g data-art="drill">
+      <g data-art="drill" strokeWidth="3.8">
+        <path d="M-101 30h90m-65-45h39M-105 73h155" strokeWidth="2"/>
         <path
           d="M-105 35h132a17 17 0 0 1 0 34h-132a17 17 0 0 1 0-34Z"
-          fill="#555b50"
+          fill="#303238"
         />
         <path d="M-104 43H22m-127 17H22" stroke="#faf8f2" strokeWidth="2" />
         {Array.from({ length: 8 }, (_, i) => (
           <path
             key={i}
             d={`M${-100 + i * 17} 39v23`}
-            stroke="#cacdc1"
+            stroke="#c8cacd"
             strokeWidth="2"
           />
         ))}
-        <path d="M-93 33v-51h63l16 22h46v29Z" fill="#ecebe3" />
+        <path d="M-93 33v-51h63l16 22h46v29Z" fill="#f97832" />
         <path d="M-81-17v-42h45v42Z" fill="#eeeee7" />
-        <path d="M-75-52h30v27h-30Z" fill="#adb6a6" />
+        <path d="M-75-52h30v27h-30Z" fill="#a5b1b8" />
         <path d="M-64-50v25M-85 6h48M-83 16h27" strokeWidth="2" />
-        <path d="M20 31 31-215 63-218 53 31Z" fill="#e6e6dc" />
+        <path d="M20 31 31-215 63-218 53 31Z" fill="#f97832" />
         <path
           d="M32-200 60-174 34-148 57-121 30-94 54-65 28-39 52-13M43-215v248"
           fill="none"
@@ -216,10 +217,11 @@ export function Drill({
         />
         <g data-art="pipe">
           <path d="M68-205v350" strokeWidth="7" />
-          <path d="M74-205v350" stroke="#92958b" strokeWidth="2" />
+          <path d="M74-205v350" stroke="#919396" strokeWidth="2" />
           <path d="m65 140 7 18 5-18Z" fill="#343832" />
         </g>
         <path d="M-21 0 15-38 34-39" fill="none" />
+        <path d="M-97 0h58m-58 7h37m-37 7h33m-22-14v26m8-26v26m8-26v26M-19 33v-57h18v57" fill="none" strokeWidth="1.6"/>
         <path d="M-97 10h8" stroke="#f45b3d" strokeWidth="4" />
       </g>
     </Place>
@@ -236,7 +238,9 @@ export function Excavator({
 }) {
   return (
     <Place x={x} y={y} scale={scale}>
-      <g data-art="excavator">
+      <g data-art="excavator" strokeWidth="4.2">
+        <g data-art="beacon"><path d="M-92-48v-16h13v16" fill="#ffb33b"/><path d="m-96-71-4-7m16 5v-9m12 12 5-6" strokeWidth="1.5"/></g>
+        <g data-art="body-detail" strokeWidth="1.5"><path d="M-113-41h70v44h-70Z" fill="#f97832"/><path d="m-100-30 15 0m-15 9h15m-15 9h15"/></g>
         <g data-art="tracks">
           <rect
             x="-130"
@@ -244,7 +248,7 @@ export function Excavator({
             width="210"
             height="48"
             rx="24"
-            fill="#33382f"
+            fill="#202227"
           />
           <rect
             x="-115"
@@ -252,7 +256,7 @@ export function Excavator({
             width="180"
             height="26"
             rx="13"
-            fill="#7e8375"
+            fill="#666a70"
           />
           {Array.from({ length: 9 }, (_, i) => (
             <path
@@ -262,18 +266,19 @@ export function Excavator({
               strokeWidth="2"
             />
           ))}
-          <circle cx="-99" cy="44" r="9" fill="#31362e" />
-          <circle cx="47" cy="44" r="9" fill="#31362e" />
+          <circle cx="-99" cy="44" r="9" fill="#202227" />
+          <circle cx="47" cy="44" r="9" fill="#202227" />
         </g>
-        <path d="M-123 18v-64h100l16 64Z" fill="#dfdfd4" />
+        <path d="M-123 18l-2-58q1-8 10-8h87l21 66Z" fill="#f97832" />
         <path d="M-121-31h44m-41 10h28m-28 10h24" strokeWidth="2" />
-        <path d="M-21 17-28-81h70l14 98Z" fill="#ecece4" />
-        <path d="M-14-68h46l9 48h-51Z" fill="#aeb6a7" />
+        <path d="M-21 17-28-73q-1-9 10-10h55l19 100Z" fill="#ff8b42" />
+        <path d="M-14-68h46l9 48h-51Z" fill="#a5b1b8" />
         <path d="M12-68v48M-14 0h47" />
         <g data-art="arm">
+          <path data-art="hydraulics" d="M48-10 97-147 235-187 340-68" fill="none" stroke="#202227" strokeWidth="3"/>
           <path
             d="M39-6 102-150 246-191 334-74 319-60 233-165 122-128 67 4Z"
-            fill="#d1d3c7"
+            fill="#f97832"
           />
           <path
             d="M55-7 112-137 238-178 326-68"
@@ -287,7 +292,7 @@ export function Excavator({
           />
           <path
             d="M80-37 111-117M151-141 226-163M267-135 305-88"
-            stroke="#9ba18f"
+            stroke="#999b9e"
             strokeWidth="3"
           />
           {[
@@ -301,12 +306,12 @@ export function Excavator({
           <g data-art="bucket">
             <path
               d="M316-74q47-5 64 22l-16 65-47 9-34-23 18-42Z"
-              fill="#6e7665"
+              fill="#41454b"
             />
             <path
               d="m313-48-14 41 23 17 30-6 12-40M327-53l-9 53m24-45-9 48"
               fill="none"
-              stroke="#c7cbbe"
+              stroke="#c5c7ca"
               strokeWidth="2"
             />
             {[305, 319, 333, 347].map((i) => (
@@ -315,6 +320,9 @@ export function Excavator({
             <path d="M314-70h18v15h-18Z" fill="#f0eee5" />
           </g>
         </g>
+        <path d="M-113 4h50m-45-37h24m-24 8h24m-24 8h24M-6-68h11v49H-6Z" strokeWidth="1.6"/>
+        <path d="M41 6h10v19H17V7" fill="#202227"/>
+        <path d="M-35 16v-68m-3 4h8m-8 12h8m-8 12h8m-8 12h8m-8 12h8" strokeWidth="1.5"/>
         <path d="M-106-49h17" stroke="#f45b3d" strokeWidth="4" />
       </g>
     </Place>
@@ -331,10 +339,11 @@ export function Truck({
 }) {
   return (
     <Place x={x} y={y} scale={scale}>
-      <g data-art="truck">
-        <path d="M-147 8h253v36h-253Z" fill="#565d4f" />
+      <g data-art="truck" strokeWidth="4">
+        <g data-art="dust" fill="none" stroke="#8d939a" strokeWidth="1.5"><path d="M-184 65q-38-19-52 2m57 12-54 1m25-21-35-4"/></g>
+        <path d="M-147 8h253v36h-253Z" fill="#303238" />
         <g data-art="bed">
-          <path d="M-162-74h202l28 73h-196Z" fill="#ddded4" />
+          <path d="M-162-74h202l28 73h-196Z" fill="#f97832" />
           <path
             d="m-149-65 37 57m4-57 31 57m9-57 29 57m10-57 25 57M-163-76H50"
             fill="none"
@@ -344,26 +353,30 @@ export function Truck({
             <Pile x={-137} y={-81} width={180} rows={2} />
           </g>
         </g>
-        <path d="M50-49h73l27 66v32H66Z" fill="#e8e8de" />
-        <path d="M59-42h49l17 36H68Z" fill="#aab3a0" />
+        <path d="M50-49h73l27 66v32H66Z" fill="#ff8b42" />
+        <path d="M59-42h49l17 36H68Z" fill="#a5b1b8" />
+        <g data-art="driver"><circle cx="94" cy="-25" r="7" fill="#faf8f2"/><path d="m89-17-2 11h18l-5-11" fill="#202227" strokeWidth="1.5"/></g>
         <path d="M84-42v34m46 27h16m-16 8h16m-16 8h16" fill="none" />
-        <path d="M114 17h31v29h-31Z" fill="#7e8574" />
-        <path d="M143 12h12v35h-12Z" fill="#cccfc0" />
+        <path d="M114 17h31v29h-31Z" fill="#7d7f82" />
+        <path d="M143 12h12v35h-12Z" fill="#c9cbce" />
         <path d="M80 1h14" strokeWidth="3" />
         {[-102, 44, 113].map((cx) => (
           <g key={cx} transform={`translate(${cx} 47)`}>
             <g data-art="wheels">
               <circle r="31" fill="#292e25" />
-              <circle r="19" fill="#c7cbbb" />
-              <circle r="9" fill="#596150" />
+              <circle r="19" fill="#b6bbc1" />
+              <circle r="9" fill="#595b5e" />
               <path
                 d="M0-25v9M25 0h-9M0 25v-9M-25 0h9"
-                stroke="#858d79"
+                stroke="#848689"
                 strokeWidth="3"
               />
             </g>
           </g>
         ))}
+        <path d="M117-35h8l9 28m-20-1h18M73 9v26h18V9M62 4h34" fill="none" strokeWidth="1.7"/>
+        <path d="M-147 11h189m-189 5h189M52 11v26M-128-2h142" strokeWidth="2"/>
+        <path d="M127 14h12v6h-12Z" fill="#faf8f2"/>
         <path d="M75-57h12v8H75Z" fill="#f45b3d" />
       </g>
     </Place>
@@ -382,7 +395,7 @@ export function Belt({
     <Place x={x} y={y}>
       <path
         d={`M0 0H${width}a16 16 0 0 1 0 32H0a16 16 0 0 1 0-32Z`}
-        fill="#30362b"
+        fill="#303235"
       />
       <path
         d={`M0 7H${width}M0 26H${width}`}
@@ -392,13 +405,13 @@ export function Belt({
       <path
         data-art="belt-flow"
         d={`M0 3H${width}`}
-        stroke="#b9c1ab"
+        stroke="#b7b9bc"
         strokeWidth="2"
         strokeDasharray="12 6"
       />
       {Array.from({ length: Math.floor(width / 75) }, (_, i) => (
         <g key={i}>
-          <circle cx={i * 75 + 20} cy="17" r="10" fill="#939a87" />
+          <circle cx={i * 75 + 20} cy="17" r="10" fill="#919396" />
           <circle cx={i * 75 + 20} cy="17" r="4" fill="#faf8f2" />
           <path
             d={`M${i * 75 + 20} 33v100m0-5 70-80m-70 0 70 80`}
@@ -413,7 +426,7 @@ export function Belt({
 }
 export function Mountains() {
   return (
-    <g data-art="far" fill="none" stroke="#b4b6ab" strokeWidth="1.5">
+    <g data-art="far" fill="none" stroke="#b2b4b7" strokeWidth="1.5">
       <path d="M-50 325 62 240 159 286 273 177 383 274 496 224 639 312 807 211 945 285 1082 180 1192 269 1415 228" />
       <path d="m62 240 30 46 37-11m144-98 15 67 33-6m486-27 31 55 33-11m212-75 34 57 28-6" />
       <path d="M65 174q16-23 31-5 8-39 34-31 23 3 28 28 22-10 31 11H65m715-47q20-20 34-1 9-37 34-32 25 4 29 32 17-7 29 6H780" />
@@ -432,7 +445,10 @@ export function MineFace({
   return (
     <Place x={x} y={y} scale={scale}>
       <g data-art="ridge" fill="none">
-        <path d="M0 455 88 210 192 121 330 86 488 128 613 187 745 159 960 226 1080 447" />
+        <path d="M49 389 171 325 331 323 442 282 584 277 746 253 931 286 1017 363" stroke="#17191c" strokeWidth="3"/>
+        <path d="m180 338-20-35m83 35-8-24m107 30-17-27m228-28-17-18m118-12-9-29m179 54-19-25m-684-48-10-28m146-30-14-25m243 44-11-22" stroke="#777d85" strokeWidth="2"/>
+        <path d="M62 434 174 385 423 392 590 351 809 374 1045 407" stroke="#17191c" strokeWidth="3"/>
+        <path fill="#ebecef" strokeWidth="3" d="M0 455 88 210 192 121 330 86 488 128 613 187 745 159 960 226 1080 447Z" />
         <path d="M33 389 172 338 408 345 584 299 814 328 1017 363M49 339 205 274 420 280 610 253 809 274 977 301M68 280 236 216 451 224 615 214 817 224 934 252M107 213 290 160 459 179 632 182 797 191" />
         {Array.from({ length: 46 }, (_, i) => {
           const xx = 120 + (i % 13) * 64;
@@ -441,14 +457,14 @@ export function MineFace({
             <path
               key={i}
               d={`m${xx} ${yy} 10 24m-3-21 6 8`}
-              stroke="#92968a"
+              stroke="#919396"
               strokeWidth="1.4"
             />
           );
         })}
         <path
           d="M4 455q198-69 419-13t664 6M12 467q216-36 419-10t637 2"
-          stroke="#7f8476"
+          stroke="#7e8083"
           strokeWidth="1.5"
         />
       </g>
@@ -468,7 +484,7 @@ export function Plant({
     <Place x={x} y={y} scale={scale}>
       <path
         d="M0 0v-140h110V0M23-140v-95h30v95M76-140v-70h20v70"
-        fill="#e4e5da"
+        fill="#d8dbde"
       />
       <path
         d="M-30-77h164v25H-30ZM-30-77v-25h164v25M-30-87h164M-12-102v25M16-102v25M44-102v25M72-102v25M100-102v25M126-102v25"
@@ -478,13 +494,13 @@ export function Plant({
         d="M16 0v-53m36 53v-53m36 53v-53M13-140v63m84-63v63M25-219h25m-25 13h25m-25 13h25M80-198h12m-12 12h12"
         strokeWidth="2"
       />
-      <path d="M-210 0-18-94l8 18-192 97Z" fill="#c9cebd" />
+      <path d="M-210 0-18-94l8 18-192 97Z" fill="#f97832" />
       <path
         d="m-184 7 13 42m49-75 16 50m49-81 16 56M-183 25l63-43m-10 22 68-46"
         fill="none"
         strokeWidth="2"
       />
-      <path d="M110-44 258 8l-8 17-140-49Z" fill="#bfc6b2" />
+      <path d="M110-44 258 8l-8 17-140-49Z" fill="#f97832" />
     </Place>
   );
 }
@@ -499,17 +515,17 @@ export function Tank({
 }) {
   return (
     <Place x={x} y={y} scale={scale}>
-      <path d="M-240 0v140q240 113 480 0V0" fill="#e0e2d6" />
+      <path d="M-240 0v140q240 113 480 0V0" fill="#d8dbde" />
       {Array.from({ length: 13 }, (_, i) => (
         <path
           key={i}
-          d={`M${-225 + i * 37} 27v${113 + Math.sin((i / 12) * Math.PI) * 35}`}
-          stroke="#8e9781"
+          d={`M${-225 + i * 37} 27v${113 + Number((Math.sin((i / 12) * Math.PI) * 35).toFixed(2))}`}
+          stroke="#8d8f92"
           strokeWidth="1.8"
         />
       ))}
       <ellipse rx="240" ry="85" fill="#faf8f2" />
-      <ellipse rx="228" ry="75" fill="#e5e1d3" />
+      <ellipse rx="228" ry="75" fill="#ffb276" />
       <g data-art="bubbles">
         {Array.from({ length: 60 }, (_, i) => {
           const xx = -196 + (i % 12) * 34;
@@ -519,9 +535,9 @@ export function Tank({
               data-art={i % 7 === 0 ? "froth-bubble" : undefined}
               key={i}
               cx={xx}
-              cy={yy + Math.sin(i) * 9}
+              cy={yy + Number((Math.sin(i) * 9).toFixed(2))}
               r={8 + (i % 5) * 2.1}
-              fill={i % 6 === 0 ? "#f5c4aa" : "#eeede1"}
+              fill={i % 6 === 0 ? "#ff8b42" : "#ffe2c8"}
               strokeWidth="1.5"
             />
           );
@@ -534,7 +550,7 @@ export function Tank({
       {[-220, -145, -70, 0, 70, 145, 220].map((i) => (
         <path key={i} d={`M${i} ${52 - Math.abs(i) / 3}v-35`} />
       ))}
-      <path d="M-35-4v-170h70V-4" fill="#c3c9b6" />
+      <path d="M-35-4v-170h70V-4" fill="#f97832" />
       <path d="M-35-169h70m-56 8v150m41-151v151" strokeWidth="2" />
       <path
         d="M-240-190h480v20h-480ZM-240-190v-23h480v23M-240-202h480"

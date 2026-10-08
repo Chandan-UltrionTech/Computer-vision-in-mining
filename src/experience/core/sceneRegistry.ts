@@ -1,14 +1,16 @@
 import type { Capability, SceneDefinition, SceneId, Handoff } from "./types";
 import { createSceneTimeline } from "../scenes/timelines";
 const cv = (
+  number: number,
   name: string,
   problem: string,
-  observes: string,
+  observing: string,
   explanation: string,
   result: string,
-): Capability => ({ name, problem, observes, explanation, result });
+): Capability => ({ number, name, problem, observing, explanation, result });
 export const capabilities = {
   core: cv(
+    1,
     "Drill-core analysis",
     "What is inside this core?",
     "Scanning fractures, veins and geological boundaries.",
@@ -16,6 +18,7 @@ export const capabilities = {
     "Core image → structured geology. Review can scale across the archive.",
   ),
   grade: cv(
+    2,
     "Ore / waste & grade mapping",
     "Which material should we mine?",
     "Reading material zones with visual and spectral imagery.",
@@ -23,6 +26,7 @@ export const capabilities = {
     "Material boundaries support selective mining and dilution decisions.",
   ),
   fragments: cv(
+    3,
     "Blast fragmentation analysis",
     "Did the blast break the rock the way we wanted?",
     "Tracing individual fragments across the muckpile.",
@@ -30,6 +34,7 @@ export const capabilities = {
     "Fragmentation feedback informs digging, crusher feed and future blasts.",
   ),
   safety: cv(
+    6,
     "PPE, exclusion zones & proximity",
     "A person is entering the equipment zone.",
     "Tracking worker, helmet, vest and machine movement.",
@@ -37,6 +42,7 @@ export const capabilities = {
     "The alert is acknowledged. The worker steps clear of the machine.",
   ),
   bucket: cv(
+    4,
     "Shovel bucket / tooth / boulder monitoring",
     "Is the bucket ready to load?",
     "Inspecting tooth geometry and the oversized boulder.",
@@ -44,6 +50,7 @@ export const capabilities = {
     "The boulder stays behind. Suitable material enters the truck.",
   ),
   driver: cv(
+    5,
     "Driver fatigue & distraction",
     "The driver’s attention is changing.",
     "Observing eye closure and head pose over time.",
@@ -51,6 +58,7 @@ export const capabilities = {
     "An in-cab alert prompts the driver to refocus and follow site procedures.",
   ),
   conveyor: cv(
+    7,
     "Conveyor foreign-object & oversize detection",
     "A loose tool is travelling toward the crusher.",
     "The belt camera is examining the material stream.",
@@ -58,6 +66,7 @@ export const capabilities = {
     "Operator alerted → belt stopped → tool removed → material flow resumes.",
   ),
   sizing: cv(
+    8,
     "Online particle-size monitoring",
     "How coarse is the material now?",
     "Segmenting normal particles, rather than boxing an anomaly.",
@@ -65,6 +74,7 @@ export const capabilities = {
     "The material stream is understood. Upstream fragmentation informs downstream control.",
   ),
   sorter: cv(
+    9,
     "Optical / laser ore sorting",
     "Which rocks deserve further processing?",
     "Scanning individual particles with optical and spectral sensors.",
@@ -72,6 +82,7 @@ export const capabilities = {
     "Two physical paths. Less waste continues into processing.",
   ),
   froth: cv(
+    10,
     "Flotation froth monitoring",
     "What is the froth telling us?",
     "Reading bubbles, motion, texture and stability over time.",
@@ -79,6 +90,7 @@ export const capabilities = {
     "Recovery conditions become visible for process review and control.",
   ),
   survey: cv(
+    11,
     "Drone 3D survey / stockpile / stope inspection",
     "How much material is here, and what has changed?",
     "Matching features across overlapping imagery.",
@@ -86,6 +98,7 @@ export const capabilities = {
     "The site is reconstructed. Stockpile and terrain geometry can be reviewed.",
   ),
   thermal: cv(
+    12,
     "Thermal + visual field inspection",
     "What can’t we see in the visual image?",
     "Comparing appearance with thermal patterns and location.",
@@ -185,7 +198,7 @@ const rows: Row[] = [
     "A damaged tooth. An oversized boulder. Look before loading.",
     "Bucket",
     "rock",
-    1.8,
+    2.8,
     "right",
   ],
   [
@@ -232,7 +245,7 @@ const rows: Row[] = [
     "A maintenance tool falls. The belt carries it toward critical equipment.",
     "Convey",
     "belt",
-    2.6,
+    3.3,
   ],
   [
     "sizing",
@@ -305,7 +318,7 @@ const rows: Row[] = [
     "Turn the CV layer off, then on. The operation remains; what we can see changes.",
     "Whole mine",
     "drone",
-    2.7,
+    3.5,
   ],
 ];
 export const sceneRegistry: SceneDefinition[] = rows.map(
@@ -317,7 +330,7 @@ export const sceneRegistry: SceneDefinition[] = rows.map(
     stage,
     handoff,
     scrollLength,
-    mobileLength: scrollLength * 0.67,
+    mobileLength: Math.max(.85, scrollLength * (id === "froth" ? .8 : id === "survey" ? .76 : .64)),
     anchor: anchor ?? "center",
     capability: capabilities[id as keyof typeof capabilities],
     desktopTimeline: createSceneTimeline(id),

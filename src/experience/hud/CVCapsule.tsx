@@ -4,103 +4,52 @@ import { useGSAP, gsap } from "../core/gsap";
 import { useExperience } from "../store/experienceStore";
 import { sceneById } from "../core/sceneRegistry";
 import styles from "./HUD.module.css";
+
 export function CVCapsule() {
   const ref = useRef<HTMLDivElement>(null);
-  const scene = useExperience((s) => s.scene),
-    state = useExperience((s) => s.state),
-    enabled = useExperience((s) => s.cvEnabled),
-    mobile = useExperience((s) => s.mobile),
-    inJourney = useExperience((s) => s.inJourney);
-  const s = sceneById[scene];
-  const cap = s.capability;
+  const identity = useRef<HTMLDivElement>(null);
+  const copy = useRef<HTMLDivElement>(null);
+  const contentTimeline = useRef<gsap.core.Timeline | null>(null);
+  const scene = useExperience(s => s.scene);
+  const state = useExperience(s => s.state);
+  const enabled = useExperience(s => s.cvEnabled);
+  const mobile = useExperience(s => s.mobile);
+  const inJourney = useExperience(s => s.inJourney);
+  const cap = sceneById[scene].capability;
   const active = Boolean(cap && state !== "normal" && enabled);
-  useGSAP(
-    () => {
-      const reduced = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
-      gsap.to(ref.current, {
-        width: active
-          ? mobile
-            ? "88%"
-            : window.innerWidth < 1025
-              ? 340
-              : 390
-          : mobile
-            ? 104
-            : 115,
-        duration: reduced ? 0 : 0.45,
-        ease: "power3.inOut",
-      });
-      if (active)
-        gsap.fromTo(
-          "[data-capsule-copy]",
-          { y: 6, opacity: 0 },
-          { y: 0, opacity: 1, duration: reduced ? 0 : 0.35 },
-        );
-    },
-    { scope: ref, dependencies: [scene, state, enabled, mobile] },
-  );
-  const title = cap
-    ? state === "problem"
-      ? cap.problem
-      : state === "observing"
-        ? "Vision begins observing"
-        : state === "solution"
-          ? cap.name
-          : cap.result
-    : "";
-  const detail = cap
-    ? state === "observing"
-      ? cap.observes
-      : state === "solution"
-        ? cap.explanation
-        : ""
-    : "";
-  const symbol =
-    state === "problem"
-      ? "?"
-      : state === "observing"
-        ? "◎"
-        : state === "result"
-          ? "✓"
-          : "◉";
-  return (
-    <div
-      ref={ref}
-      className={`${styles.capsule} ${!inJourney ? styles.hidden : ""}`}
-      data-anchor={s.anchor}
-      data-active={active}
-      data-state={state}
-      data-off={!enabled}
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
-      <div className={styles.capsuleLine}>
-        <span className={styles.statusIcon} aria-hidden="true">
-          {enabled ? symbol : "○"}
-        </span>
-        <span>
-          {!enabled
-            ? "CV off"
-            : active
-              ? state === "problem"
-                ? "A question from the mine"
-                : state === "observing"
-                  ? "Observing"
-                  : state === "result"
-                    ? "Operational result"
-                    : "Computer vision"
-              : "CV ready"}
-        </span>
-      </div>
-      {active && (
-        <div className={styles.capsuleContent} data-capsule-copy>
-          <strong>{title}</strong>
-          {detail && <p>{detail}</p>}
-        </div>
-      )}
-    </div>
-  );
+  useGSAP(() => {
+    if (!ref.current || !identity.current || !copy.current) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const duration = reduced ? 0 : .58;
+    const width = active ? Math.min(mobile ? window.innerWidth - 40 : 370, window.innerWidth - 40) : 38;
+    const height = active ? (mobile ? 166 : state === "solution" ? 220 : 190) : 38;
+    gsap.to(ref.current, {width, height, borderRadius: active ? 26 : 19, duration, ease:"power4.inOut", overwrite:true});
+    const node = copy.current;
+    const identityNode = identity.current;
+    contentTimeline.current?.kill();
+    const detail = !cap ? "" : state === "problem" ? cap.problem : state === "observing" ? cap.observing : state === "solution" ? cap.explanation : state === "action" ? "Operator response in progress. Follow the physical action below." : cap.result;
+    const tl = gsap.timeline();
+    contentTimeline.current = tl;
+    tl.to(node, {opacity:0, y:-5, duration: reduced ? 0 : .14})
+      .call(() => {
+        node.replaceChildren();
+        const label = document.createElement("small");
+        label.textContent = state === "solution" ? "Computer vision" : state === "action" ? "Operational action" : state === "result" ? "Result confirmed" : state === "observing" ? "Observing" : "The mining problem";
+        const paragraph = document.createElement("p"); paragraph.textContent = detail;
+        node.append(label, paragraph);
+        if (cap && identityNode.dataset.number !== String(cap.number)) {
+          identityNode.replaceChildren();
+          const number = document.createElement("span"); number.className = styles.caseNumber; number.textContent = String(cap.number).padStart(2,"0");
+          const title = document.createElement("strong"); title.textContent = cap.name;
+          identityNode.append(number, title); identityNode.dataset.number = String(cap.number);
+        }
+      })
+      .to(identityNode, {opacity:active ? 1 : 0, duration:reduced ? 0 : .24}, .16)
+      .fromTo(node, {y:7}, {y:0, opacity:active ? 1 : 0, duration:reduced ? 0 : .3, ease:"power2.out"}, .22);
+  }, {scope:ref, dependencies:[scene,state,enabled,mobile]});
+  return <div ref={ref} className={`${styles.capsule} ${!inJourney ? styles.hidden : ""}`} data-active={active} data-state={state} data-off={!enabled} role="status" aria-live="polite" aria-atomic="true" aria-label={!active ? (enabled ? "Computer vision dormant" : "Computer vision off") : undefined}>
+    <span className={styles.statusIcon} aria-hidden="true">{enabled ? "◉" : "○"}</span>
+    <div ref={identity} className={styles.capsuleIdentity}/>
+    <div ref={copy} className={styles.capsuleContent}/>
+  </div>;
 }

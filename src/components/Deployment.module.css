@@ -1,9 +1,9 @@
 .section {
   position: relative;
   padding: 110px 6% 50px;
-  background: #f0f1e9;
+  background: #eef0f3;
   z-index: 10;
-  border-top: 1px solid #d2d7c7;
+  border-top: 1px solid #d0d2d5;
   scroll-margin-top: 75px;
 }
 .lead {
@@ -11,7 +11,7 @@
 }
 .label {
   font-size: 13px;
-  color: #69735e;
+  color: #696b6e;
   display: block;
   margin-bottom: 28px;
 }
@@ -27,14 +27,14 @@
   max-width: 490px;
   font-size: 16px;
   line-height: 1.7;
-  color: #626c56;
+  color: #616366;
 }
 .summary {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 25px;
   padding: 45px 0;
-  border-bottom: 1px solid #ccd3c0;
+  border-bottom: 1px solid #cacccf;
   margin: 45px 0 70px;
 }
 .summary h3 {
@@ -44,7 +44,7 @@
 .summary p {
   font-size: 12px;
   line-height: 1.8;
-  color: #6a735e;
+  color: #696b6e;
 }
 .opportunities {
   display: grid;
@@ -68,7 +68,7 @@
 .opportunity p {
   font-size: 14px;
   line-height: 1.7;
-  color: #647056;
+  color: #636568;
 }
 .opportunity button {
   margin-top: 23px;
@@ -109,7 +109,7 @@
 .transcript p {
   font-size: 14px;
   line-height: 1.7;
-  color: #626c56;
+  color: #616366;
   margin-top: 8px;
 }
 .pipeline {
@@ -121,7 +121,7 @@
 }
 .pipeline span {
   padding: 14px 17px;
-  border: 1px solid #9ca68e;
+  border: 1px solid #9b9da0;
   border-radius: 8px;
   font-size: 12px;
   background: #faf8f2;
@@ -134,12 +134,12 @@
 .path {
   font-size: 13px;
   line-height: 1.9;
-  color: #626d55;
+  color: #616366;
   margin-bottom: 65px;
 }
 .planner {
   padding: 40px;
-  border: 1px solid #bbc5ab;
+  border: 1px solid #b9bbbe;
   border-radius: 16px;
   background: var(--canvas);
   max-width: 950px;
@@ -153,7 +153,7 @@
   font-size: 14px;
   line-height: 1.7;
   max-width: 650px;
-  color: #646e58;
+  color: #636568;
   margin: 15px 0;
 }
 .form {
@@ -172,7 +172,7 @@
 .form textarea {
   width: 100%;
   padding: 13px;
-  border: 1px solid #b8c2aa;
+  border: 1px solid #b7b9bc;
   background: #fffef9;
   border-radius: 5px;
   min-height: 46px;
@@ -216,7 +216,7 @@
   gap: 30px;
   padding-top: 60px;
   font-size: 11px;
-  color: #7a846e;
+  color: #797b7e;
 }
 .footer a {
   color: var(--ink);

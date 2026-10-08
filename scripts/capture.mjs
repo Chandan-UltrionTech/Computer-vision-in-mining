@@ -7,7 +7,7 @@ page.on("pageerror", (e) => console.log("PAGE ERROR", e.message));
 page.on("console", (m) => {
   if (m.type() === "error") console.log("CONSOLE", m.text());
 });
-await page.goto("http://127.0.0.1:3000");
+await page.goto("http://localhost:3000");
 await page.waitForLoadState("networkidle");
 await page.screenshot({ path: "test-results/inspect-opening.png" });
 console.log(

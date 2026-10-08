@@ -158,7 +158,7 @@ export function Deployment() {
                   <Drill x={170} y={112} scale={0.55} />
                   <path
                     d="M249 74h139v70H249Zm13 12h112m-112 18h112m-112 18h112"
-                    stroke="#747f65"
+                    stroke="#737578"
                   />
                 </>
               )}

@@ -17,28 +17,28 @@ function SurveyPile() {
     <>
       <path
         d="M259 652 354 564 530 349 664 455 815 401 1056 653Z"
-        fill="#e0e3d5"
+        fill="#d8dbde"
       />
       <path
         d="m530 349-59 181-117 34m176-215 134 106 106 196m45-250-99 186-52-132M259 652h797"
         fill="none"
-        stroke="#929c82"
+        stroke="#909295"
       />
       {Array.from({ length: 29 }, (_, i) => (
         <path
           key={i}
           d={`m${390 + (i % 9) * 55} ${547 + Math.floor(i / 9) * 27} 5 8m-2-13 8 4`}
-          stroke="#a1aa90"
+          stroke="#9ea0a3"
           strokeWidth="1.5"
         />
       ))}
       <g data-art="cv" className="cv-layer" fill="none" stroke="#f45b3d">
-        <g data-art="cloud">
+        <g data-art="cloud" data-cv-beat="pointCloud">
           {Array.from({ length: 160 }, (_, i) => {
             const row = Math.floor(i / 16),
               col = i % 16;
             const y = 635 - row * 27;
-            const x = 320 + col * 45 + Math.sin(i) * 8;
+            const x = 320 + col * 45 + Number((Math.sin(i) * 8).toFixed(2));
             if (y < Math.max(345, 610 - Math.sin((col / 15) * Math.PI) * 245))
               return null;
             return (
@@ -53,7 +53,7 @@ function SurveyPile() {
             );
           })}
         </g>
-        <g data-art="mesh">
+        <g data-art="mesh" data-cv-beat="meshBuild">
           {Array.from({ length: 12 }, (_, i) => (
             <path
               key={i}
@@ -72,15 +72,15 @@ function SurveyPile() {
             );
           })}
         </g>
-        <path d="M259 691h795m-795-8v16m795-16v16M1100 651V349m-8 0h16m-16 302h16" />
-        <text x="517" y="726" stroke="none" fill="#c4472d">
+        <path data-cv-beat="measurement" d="M259 671h795m-795-8v16m795-16v16M1100 651V349m-8 0h16m-16 302h16" />
+        <text data-cv-beat="measurement" x="517" y="678" stroke="none" fill="#c4472d">
           width / volume / change · illustrative reconstruction
         </text>
-        <text x="1119" y="502" stroke="none" fill="#c4472d">
+        <text data-cv-beat="measurement" x="1119" y="502" stroke="none" fill="#c4472d">
           height
         </text>
         <path d="M320 716v32l70 12 15-44m-85 0h85" strokeDasharray="4 4" />
-        <text x="134" y="751" stroke="none" fill="#c4472d">
+        <text x="134" y="679" stroke="none" fill="#c4472d">
           void geometry cutaway
         </text>
       </g>
@@ -97,7 +97,7 @@ export function Recovery({ id }: { id: SceneId }) {
         <Camera x={635} y={412} />
         <path
           d="M840 606 1192 643l-5 37-353-37ZM823 669l205 88 29-38-205-87Z"
-          fill="#c9d0bb"
+          fill="#f97832"
         />
         <path d="M861 674v52m70-42v64m168-100v86m-59-92v52" fill="none" />
         <Pile x={180} y={523} width={485} rows={1} />
@@ -109,8 +109,8 @@ export function Recovery({ id }: { id: SceneId }) {
           <Rock x={680} y={548} size={0.9} />
           <Rock x={773} y={539} size={0.8} />
         </g>
-        <path d="M809 614v-54h-29v54Z" fill="#8e9a7a" />
-        <g data-art="jet" opacity="0" stroke="#939f7c">
+        <path d="M809 614v-54h-29v54Z" fill="#f97832" />
+        <g data-art="jet" opacity="0" stroke="#8f9194">
           <path d="m795 561 25-68m-25 68 7-73m-7 73 42-62" />
         </g>
         <g data-art="cv" className="cv-layer" fill="none" stroke="#f45b3d">
@@ -121,7 +121,7 @@ export function Recovery({ id }: { id: SceneId }) {
           <text x="1054" y="621" fill="#c4472d" stroke="none">
             keep → processing
           </text>
-          <text x="1080" y="747" fill="#626d56" stroke="none">
+          <text x="1080" y="694" fill="#626467" stroke="none">
             reject
           </text>
           <path d="M701 488q37-16 61 6l8 29-62 5Z" />
@@ -133,19 +133,19 @@ export function Recovery({ id }: { id: SceneId }) {
       <>
         <Mountains />
         <Plant x={1060} y={464} scale={0.75} />
-        <path d="M360 382h460l-114 189H475Z" fill="#d8ddcd" />
+        <path d="M360 382h460l-114 189H475Z" fill="#d6d8db" />
         <g data-art="mineral">
           <Rock x={575} y={414} size={2} />
           <Rock x={661} y={440} size={1.5} />
         </g>
-        <path d="M435 570h306v117H435Z" fill="#e3e5da" />
+        <path d="M435 570h306v117H435Z" fill="#e1e3e6" />
         <g
           data-art="water"
           style={{ transform: "scaleY(.1)", transformOrigin: "580px 680px" }}
         >
           <path
             d="M437 591q46-12 84 0t76 0 74 0 67 0v94H437Z"
-            fill="#cbd2bd"
+            fill="#c9cbce"
             stroke="none"
           />
           {Array.from({ length: 38 }, (_, i) => (
@@ -154,14 +154,14 @@ export function Recovery({ id }: { id: SceneId }) {
               cx={451 + (i % 10) * 28}
               cy={618 + Math.floor(i / 10) * 17}
               r={2 + (i % 3)}
-              fill="#616e4f"
+              fill="#5f6164"
               stroke="none"
             />
           ))}
           <path
             d="M440 610q70-19 140 0t152 0m-271 33q74-21 131 0t117 0"
             fill="none"
-            stroke="#919e7d"
+            stroke="#8f9194"
             strokeWidth="2"
           />
         </g>
@@ -169,10 +169,10 @@ export function Recovery({ id }: { id: SceneId }) {
         <path
           d="M737 640h241v-76"
           fill="none"
-          stroke="#cdd4be"
+          stroke="#cacccf"
           strokeWidth="18"
         />
-        <text x="460" y="730">
+        <text x="460" y="675">
           fine mineral particles + water → slurry
         </text>
       </>
@@ -204,7 +204,7 @@ export function Recovery({ id }: { id: SceneId }) {
             motion / stability
           </text>
           <path d="M954 442h173v-61m-20 33 20-33 20 33" />
-          <text x="1047" y="362" stroke="none" fill="#c4472d">
+          <text x="1040" y="362" textAnchor="end" stroke="none" fill="#c4472d">
             process signal → operator
           </text>
           <path
@@ -225,7 +225,7 @@ export function Recovery({ id }: { id: SceneId }) {
         <Mountains />
         <Plant x={1080} y={490} scale={0.8} />
         <Tank x={1220} y={534} scale={0.35} />
-        <path d="M920 350 609 481l9 25 310-132Z" fill="#c1cbb1" />
+        <path d="M920 350 609 481l9 25 310-132Z" fill="#f97832" />
         <path d="M806 415v159m-88-123v120m-87-78v117" fill="none" />
         <g data-art="product">
           <Rock x={615} y={485} size={0.4} />
@@ -236,11 +236,11 @@ export function Recovery({ id }: { id: SceneId }) {
         <path
           d="M168 706q299-20 699 22t550-55"
           fill="none"
-          stroke="#939f7e"
+          stroke="#909295"
           strokeWidth="3"
         />
         <Drone x={940} y={639} scale={0.8} />
-        <text x="1054" y="738">
+        <text x="1054" y="674">
           product inventory / site geometry
         </text>
       </>
@@ -286,7 +286,7 @@ export function Recovery({ id }: { id: SceneId }) {
               fill="#c9452a"
             />
             <path
-              d="M593 393h138v142H593Z"
+              data-art="thermal-target" d="M593 393h138v142H593Z"
               fill="none"
               stroke="#b83b26"
               strokeDasharray="8 4"
@@ -295,16 +295,16 @@ export function Recovery({ id }: { id: SceneId }) {
               thermal anomaly → inspection target
             </text>
             <path
-              d="M651 479v69l-9 11m9-11 9 11"
+              data-art="thermal-target" d="M651 479v69l-9 11m9-11 9 11"
               fill="none"
               stroke="#b83b26"
               strokeWidth="4"
             />
           </g>
-          <text x="192" y="703" stroke="none" fill="#41483a">
+          <text x="192" y="674" stroke="none" fill="#414346">
             RGB appearance + thermal patterns + location
           </text>
-          <text x="1000" y="703" stroke="none" fill="#c4472d">
+          <text x="1000" y="674" stroke="none" fill="#c4472d">
             illustrative sensor view
           </text>
         </g>
