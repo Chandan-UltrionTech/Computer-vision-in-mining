@@ -13,6 +13,7 @@ export function Place({
 }) {
   return <g transform={`translate(${x} ${y}) scale(${scale})`}>{children}</g>;
 }
+export const rockShapes = ["M-24 5 -16-14 0-25 17-13 27 9 17 24-13 22Z", "M-28 9-19-11-3-23 19-17 25 4 13 25-11 21Z", "M-25-3-7-27 14-22 29 2 16 22-9 26-29 12Z", "M-23 12-21-9 4-24 23-8 28 16 1 25Z", "M-30 6-13-19 9-26 25-6 20 18-6 27-25 20Z"];
 export function Rock({
   x = 0,
   y = 0,
@@ -26,7 +27,7 @@ export function Rock({
   accent?: boolean;
   variant?: number;
 }) {
-  const shapes = ["M-24 5 -16-14 0-25 17-13 27 9 17 24-13 22Z", "M-28 9-19-11-3-23 19-17 25 4 13 25-11 21Z", "M-25-3-7-27 14-22 29 2 16 22-9 26-29 12Z", "M-23 12-21-9 4-24 23-8 28 16 1 25Z", "M-30 6-13-19 9-26 25-6 20 18-6 27-25 20Z"];
+  const shapes = rockShapes;
   const v = variant ?? Math.abs(Math.round(x * 3 + y)) % shapes.length;
   return (
     <Place x={x} y={y} scale={size}>
@@ -131,6 +132,7 @@ export function Drone({
             <path d={`M${i} -7v14`} strokeWidth="4" />
             <ellipse
               data-art="rotor"
+              data-ambient="rotor"
               cx={i}
               cy="-7"
               rx="24"

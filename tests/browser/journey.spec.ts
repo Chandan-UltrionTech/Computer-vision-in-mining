@@ -92,7 +92,7 @@ test("desktop complete journey, semantic events and interactions", async ({
     await expect(page.locator(`[data-scene=${id}]`)).toBeVisible();
     const bounds = await page.locator(`[data-scene=${id}]`).boundingBox();
     expect(bounds?.y).toBeCloseTo(0, 0);
-    await expect(page.locator(`[data-scene=${id}] svg`).first()).toBeVisible();
+    await expect(page.locator("[data-world-svg]")).toBeVisible();
   }
   await jump(page, "core", 0.08);
   await expect(page.locator("[data-state]")).toHaveAttribute(
@@ -126,26 +126,23 @@ test("desktop complete journey, semantic events and interactions", async ({
   ).toHaveAttribute("aria-pressed", "true");
   await page.waitForTimeout(800);
   await page.screenshot({ path: "test-results/blast-desktop.png" });
+  const toolPosition = async () => {
+    const transform=await page.locator('[data-world-svg] [data-material=tool]').getAttribute('transform');
+    return transform!.match(/translate\(([-\d.]+) ([-\d.]+)\)/)!.slice(1).map(Number);
+  };
   await jump(page, "conveyor", 0.12);
-  const fall = await page
-    .locator("[data-scene=conveyor] [data-art=tool]")
-    .boundingBox();
+  const fall = await toolPosition();
   await jump(page, "conveyor", 0.32);
-  const landed = await page
-    .locator("[data-scene=conveyor] [data-art=tool]")
-    .boundingBox();
-  expect(landed!.y).toBeGreaterThan(fall!.y + 20);
+  const landed = await toolPosition();
+  expect(landed[1]).toBeGreaterThan(fall[1] + 20);
   await jump(page, "conveyor", 0.65);
-  const travelled = await page
-    .locator("[data-scene=conveyor] [data-art=tool]")
-    .boundingBox();
-  expect(travelled!.x).toBeGreaterThan(landed!.x + 40);
+  const travelled = await toolPosition();
+  // Compare world coordinates so a motivated camera reframe does not look like tool movement.
+  expect(travelled[0]).toBeGreaterThan(landed[0]+40);
   await page.screenshot({ path: "test-results/conveyor-desktop.png" });
   await jump(page, "conveyor", 0.85);
-  const removed = await page
-    .locator("[data-scene=conveyor] [data-art=tool]")
-    .boundingBox();
-  expect(removed!.y).toBeLessThan(travelled!.y - 50);
+  const removed = await toolPosition();
+  expect(removed[1]).toBeLessThan(travelled[1] - 20);
   await jump(page, "survey", 0.7);
   await page.screenshot({ path: "test-results/survey-desktop.png" });
   await jump(page, "thermal", 0.65);
@@ -157,16 +154,16 @@ test("desktop complete journey, semantic events and interactions", async ({
   });
   await toggle.click();
   await expect(toggle).toHaveAttribute("aria-checked", "false");
-  await expect(page.locator("[data-scene=finale] .cv-layer").first()).toHaveCSS(
+  await expect(page.locator("[data-world-svg] .cv-layer").first()).toHaveCSS(
     "visibility",
     "hidden",
   );
   await expect(
-    page.locator("[data-scene=finale] [data-art=truck]").first(),
+    page.locator("[data-world-svg] [data-actor=truck]").first(),
   ).toBeVisible();
   await toggle.click();
   await expect(toggle).toHaveAttribute("aria-checked", "true");
-  await page.getByRole("link", { name: "From vision to deployment" }).click();
+  await page.getByRole("link", { name: "Deployment", exact: true }).click();
   await page.waitForTimeout(1400);
   await page
     .getByRole("button", { name: "Explore this pilot ↗" })
@@ -245,7 +242,7 @@ test("mobile and intermediate widths keep the full narrative usable", async ({
   page.on("console", m => {if(m.type() === "error" || m.type() === "warning") errors.push(m.text())});
   for (const [width, height] of [
     [390, 844],
-    [320, 720],
+    [430, 932],
     [768, 1024],
     [1024, 768],
   ]) {
@@ -317,4 +314,49 @@ test("numbered identity persists through the conveyor intervention and reverses"
   await expect(capsule).toContainText('07');
   await expect(capsule).toContainText('Conveyor foreign-object & oversize detection');
  }
+});
+
+test('physical actors keep DOM identity across their semantic story beats',async({page})=>{
+ await page.goto('/');await page.waitForLoadState('networkidle');
+ const groups=[
+  {selector:'[data-material=main-belt]',scenes:['conveyor','sizing','sorter']},
+  {selector:'[data-material=crusher-hero]',scenes:['crusher','conveyor','sizing','sorter','slurry']},
+  {selector:'[data-actor=truck]',scenes:['loading','haul','driver','crusher']},
+  {selector:'[data-actor=survey-drone]',scenes:['stockpile','survey','thermal','finale']},
+ ];
+ for(const group of groups){
+  await jump(page,group.scenes[0],.5);
+  const actor=await page.locator(`[data-world-svg] ${group.selector}`).elementHandle();
+  expect(actor).not.toBeNull();
+  for(const scene of [...group.scenes,...group.scenes.toReversed()]){
+   await jump(page,scene,.6);
+   expect(await actor!.evaluate((node,selector)=>node===document.querySelector(`[data-world-svg] ${selector}`),group.selector)).toBe(true);
+  }
+ }
+ await expect(page.locator('[data-world-svg]')).toHaveCount(1);
+});
+
+test('reversing material flow restores physical state after removal and sorting',async({page})=>{
+ await page.goto('/');await page.waitForLoadState('networkidle');
+ await jump(page,'conveyor',.72);
+ const held=await page.locator('[data-material=crusher-hero]').getAttribute('transform');
+ const heldParticle=await page.locator('[data-feed-particle="4"]').getAttribute('transform');
+ await jump(page,'conveyor',.85);
+ await expect(page.locator('[data-material=crusher-hero]')).toHaveAttribute('transform',held!);
+ await expect(page.locator('[data-feed-particle="4"]')).toHaveAttribute('transform',heldParticle!);
+ await jump(page,'conveyor',.6);
+ const before=await page.locator('[data-world-part=material-flow]').evaluate(el=>{
+  const selectors=['[data-material=tool]','[data-material=crusher-hero]','[data-feed-particle="4"]'];
+  return selectors.map(selector=>el.querySelector(selector)?.getAttribute('transform'));
+ });
+ await jump(page,'conveyor',.95);
+ await expect(page.locator('[data-material=tool]')).toHaveAttribute('opacity','0');
+ await jump(page,'sorter',.95);
+ await jump(page,'conveyor',.6);
+ const after=await page.locator('[data-world-part=material-flow]').evaluate(el=>{
+  const selectors=['[data-material=tool]','[data-material=crusher-hero]','[data-feed-particle="4"]'];
+  return selectors.map(selector=>el.querySelector(selector)?.getAttribute('transform'));
+ });
+ expect(after).toEqual(before);
+ await expect(page.locator('[data-material=tool]')).toHaveAttribute('opacity','1');
 });

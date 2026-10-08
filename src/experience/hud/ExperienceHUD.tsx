@@ -3,10 +3,13 @@ import { CVCapsule } from "./CVCapsule";
 import { CVToggle } from "./CVToggle";
 import { JourneyTrack } from "./JourneyTrack";
 import styles from "./HUD.module.css";
+import { useExperience } from "../store/experienceStore";
 export function ExperienceHUD() {
+  const scene = useExperience(s => s.scene);
+  const inJourney = useExperience(s => s.inJourney);
   return (
     <>
-      <header className={styles.header}>
+      <header className={styles.header} data-quiet={inJourney && scene !== "arrival"}>
         <a
           href="#mine"
           className={styles.brand}
@@ -27,7 +30,7 @@ export function ExperienceHUD() {
         </a>
         <div className={styles.right}>
           <a className={styles.about} href="#deployment">
-            From vision to deployment
+            Deployment
           </a>
           <CVToggle />
         </div>

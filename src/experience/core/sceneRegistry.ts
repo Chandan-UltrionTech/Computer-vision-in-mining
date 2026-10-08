@@ -314,8 +314,8 @@ const rows: Row[] = [
   [
     "finale",
     3,
-    "One mine.\nOne vision layer.",
-    "Turn the CV layer off, then on. The operation remains; what we can see changes.",
+    "One operation.\nMany visual decisions.",
+    "Turn the CV layer off, then on. The operation stays the same; only what we can see changes.",
     "Whole mine",
     "drone",
     3.5,

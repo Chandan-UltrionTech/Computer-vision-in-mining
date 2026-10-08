@@ -1,42 +1,44 @@
-# Cinematic remediation — 8 October 2026
+# Persistent cinematic world — 8 October 2026
 
-Status: second implementation pass in progress. Previous completion claims are superseded.
+Status of the master investor-quality remediation. This supersedes the earlier panel/crossfade completion claims.
 
-Reference review: six PNGs and all three narrative authorities inspected; original stack retained.
-Baseline: reproduced React hydration warning from unrounded SVG trigonometric coordinates.
-Current: rebuilding shared illustration language, scene clocks, capsule and coordinate-based transitions.
-QA: baseline desktop captured; redesigned desktop/tablet/mobile and reverse scroll pending.
+## Architecture
 
-Checkpoint 2:
-- Original numbers 01-12, permanent capability identity, dormant eye marker, layered copy transitions.
-- Per-scene semantic clocks and delayed confirmation after physical movement.
-- Coordinate-based camera overlap shots replace panel slides; incoming timelines run during transitions.
-- Mining primitives have silhouette strokes, machine details, orange PPE, five rock families and neutral rock fills.
-- Geological benches, infrastructure, service pipes, gantries, workers and terrain evolve across the operation.
-- Mobile subject framing, shorter routes, compact annotation strip; reduced-motion identities preserved.
-- Rounded trigonometric SVG values removed the reproduced hydration warning; screenshot audit reported zero console errors.
-- First lint and production build pass. Browser rerun exposed invisible incoming panels intercepting clicks; fixed with inert and pointer-events management. Final verification pending.
+- One persistent SVG world (`world/PersistentWorldStage.tsx`) replaces the 22 full-screen visual panels. Scene `<section>`s carry only captions, the detonator button and reduced-motion copy.
+- `core/JourneyController.ts` maps scroll to (scene, progress), owns Lenis, panel inertness, captions and the rail. It no longer draws anything.
+- `world/StageDirector.ts` owns the camera rig, parallax layers, actor updates, off-screen culling, finale signals and the projected detonator position.
+- `world/CameraDirector.ts`: keyframed shots per scene, one shared pose per boundary, logarithmic zoom, follow shots derived from actor poses, cab roll compensation, decaying blast shake.
+- `world/actors.ts`: shared, pure poses for truck, excavator, bucket lip, drone and detonator. The camera and the artwork read the same functions.
+- Parallax depths: far ridge 0.22, mid pit and plant silhouettes 0.55, operation 1, foreground 1.32.
+- Retired: `transitions/PhysicalHandoff.tsx`, `transitions/choreography.ts`, `recoveryFocus`.
 
-Final implementation checkpoint — 8 October 2026:
-- Parts I, II and III redesigned, including whole-mine payoff and CV toggle comparison.
-- Fixed world coordinates retain the muckpile across fragmentation/excavation and keep the conveyor stable across hazard/sizing. Worker tracking follows approach and retreat.
-- Aperture masks for cab entry/exit and slurry; bottom reveal for crusher discharge; close rock occlusion for the blast; extended core seam and continued drone flight. Incoming timelines pre-roll and maintain that progress at activation, preventing a boundary reset.
-- One animation authority for blasting: detonator advances the scroll clock; wheel/touch interrupts; replay seeks the same timeline. No independent cloud/debris click animation remains.
-- Inactive scenes are inert and reject pointer events, fixing invisible scene layers blocking controls. Match-media cleanup restores accessible static scenes.
-- SVG trigonometry rounded to two decimals fixed the reproduced React hydration issue, rather than hiding the development indicator.
+## Continuity (QA matrix, forward and reverse at 1440×900)
 
-Verification:
-- npm run lint: PASS.
-- npm test: PASS, four tests for original numbering, physical/result ordering, reversal and transition contracts.
-- npm run build: PASS, TypeScript and static route generation.
-- npm run test:browser: PASS, six scenarios, including complete desktop interaction, 360 forward/reverse samples, resize/motion-preference cleanup, 390/320/768/1024 responsive widths, reduced motion, CV OFF/ON and persistent case identity.
-- Desktop scene review at 1440x900, tablet 768x1024 and mobile 390x844. Safe regions, readable identity, different overlay grammars and physical handoffs inspected.
-- Transition review sampled core, blast, muckpile, cab, same-belt and aerial boundaries.
-- Bounded headless Chromium survey performance sample: 150 frames; median and p95 about 16.7 ms; no long tasks or application console errors. This is a test-machine measurement, not a physical-device guarantee.
+| Boundary | Anchor | Result |
+|---|---|---|
+| arrival → drill → core | drill rig, core rises out of the cut-away seam and is laid in the tray | continuous |
+| core → grade → blast | orange seam line; drill trams clear before charging | continuous |
+| blast → fragments → excavation | same bench collapses to the muckpile behind the dust curtain; excavator tracks in | continuous |
+| safety → bucket → loading | one excavator; camera follows the bucket lip; boulder drops beside the truck | continuous |
+| haul → driver → crusher | camera dollies through the cab window and back out | continuous |
+| crusher → conveyor | truck turns, reverses, tips, lowers its bed and drives away down the ramp | continuous |
+| conveyor → sizing → sorter → slurry | one belt, one plant line | continuous |
+| froth → stockpile → survey → thermal → finale | one climb; the finale retraces the route and reactivates markers 01–12 in place | continuous |
 
-Remaining verification boundaries:
-- Physical-device Safari/Firefox and low-end mobile GPU testing remain unverified.
-- Mobile secondary SVG text is intentionally replaced by a compact annotation strip; full capability explanation is available in reduced-motion copy and the transcript.
-- Finite SVG fields remain appropriate at the measured complexity. No Canvas/WebGL dependency was added; active-only ambient timelines still pause outside the journey.
+CV overlays fade in and out with the scene clock instead of switching off at the boundary. Contact sheets: `node scripts/contact-sheet.mjs 1440 900 all .15,.55,.92` (add `REVERSE=1` to step backwards).
 
-Final responsive framing pass: tablet art reduced to 128% to retain edge callouts; mobile finale adds a centered pullback to reveal the complete mine. Lint, four unit tests, production build and all six browser scenarios re-passed after these changes.
+## Responsive
+
+- Phones (390×844, 430×932): subject centred and lifted; the CV capsule docks at the bottom; landmark numbers stay visible in the finale; the finale pulls back further so the whole route fits.
+- The detonator button is projected onto the world position of the charge line and clamped on screen.
+
+## Verification
+
+- `npm run lint`: clean. `npm test`: 6/6, including a new "no cut inside any scene" camera continuity test. `npm run test:browser`: 8/8. `npm run build`: passes.
+- Frame pacing (`node scripts/perf.mjs`, headless Chromium with software rendering): median 16.7 ms overall. The 95th percentile is 33 ms. The cab dolly is the heaviest segment.
+
+## Known limitations
+
+- Pacing figures come from software rasterisation; GPU browsers should do better, but this has not been measured on target hardware.
+- On narrow phones the charge line itself is off screen during the blast; the plunger button is clamped to the left edge.
+- The subtitle can sit close to the truck at the start of the crusher scene; a text halo keeps it readable.

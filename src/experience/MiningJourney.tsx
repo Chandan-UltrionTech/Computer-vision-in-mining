@@ -7,12 +7,13 @@ import { useExperience } from "./store/experienceStore";
 import { ExperienceHUD } from "./hud/ExperienceHUD";
 import { Scene } from "./scenes/Scene";
 import { Deployment } from "@/components/Deployment";
-import { PhysicalHandoff } from "./transitions/PhysicalHandoff";
+import { PersistentWorldStage } from "./world/PersistentWorldStage";
 import styles from "./styles/Journey.module.css";
 
 export function MiningJourney() {
   const root = useRef<HTMLDivElement>(null);
   const cvEnabled = useExperience((s) => s.cvEnabled);
+  const reduced = useExperience((s) => s.reduced);
   useGSAP(
     () => {
       if (root.current) return new JourneyController(root.current).mount();
@@ -29,16 +30,17 @@ export function MiningJourney() {
         <div
           ref={root}
           className={styles.journey}
+          data-journey
           data-cv={cvEnabled ? "on" : "off"}
           id="mine"
         >
           <div className={styles.viewport}>
+            <PersistentWorldStage />
             <div className={styles.panels}>
               {sceneRegistry.map((definition) => (
-                <Scene key={definition.id} definition={definition} />
+                <Scene key={definition.id} definition={definition} visual={reduced} />
               ))}
             </div>
-            <PhysicalHandoff />
           </div>
           <div className={styles.chapters} aria-hidden="true">
             {sceneRegistry.map((s) => (

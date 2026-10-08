@@ -1,11 +1,13 @@
 "use client";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger } from "./gsap";
-export function createSmoothScroll() {
+/** Wheel input is smoothed lightly; touch stays native so fingers and camera never disagree. */
+export function createSmoothScroll(mobile = false) {
   const lenis = new Lenis({
     autoRaf: false,
-    smoothWheel: true,
-    duration: 1.05,
+    smoothWheel: !mobile,
+    lerp: .14,
+    wheelMultiplier: .95,
     anchors: true,
   });
   const tick = (time: number) => lenis.raf(time * 1000);

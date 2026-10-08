@@ -3,8 +3,8 @@ import { useState, useRef } from "react";
 import {
   Belt,
   Camera,
-  Drill,
   Pile,
+  Rock,
 } from "@/experience/illustrations/Primitives";
 import styles from "./Deployment.module.css";
 import { capabilities } from "@/experience/core/sceneRegistry";
@@ -18,7 +18,7 @@ const workflows = [
       "Review false alarms, missed hazards and calibrated particle measurements.",
   },
   {
-    name: "Blast Intelligence",
+    name: "Blast Fragmentation Intelligence",
     brief:
       "Use calibrated muckpile imagery to understand fragmentation and bring feedback into the next blast.",
     data: "Calibrated post-blast imagery with reference scale and independent size checks.",
@@ -117,7 +117,7 @@ export function Deployment() {
         <div>
           {Object.values(capabilities).map((cap) => (
             <article key={cap.name}>
-              <h3>{cap.name}</h3>
+              <h3>{String(cap.number).padStart(2, "0")} · {cap.name}</h3>
               <p>{cap.problem}</p>
               <p>{cap.explanation}</p>
               <p>{cap.result}</p>
@@ -138,11 +138,13 @@ export function Deployment() {
               strokeWidth="2.5"
               aria-hidden="true"
             >
+              <path d="M4 79 50 56 92 64 134 43 188 63 247 54 309 77 360 45 416 63M3 163q103-15 198-2t214-2" stroke="#a4a9b0" strokeWidth="1.2" />
               {i === 0 ? (
                 <>
                   <Belt x={20} y={105} width={370} />
                   <Pile x={30} y={82} width={280} rows={1} />
                   <Camera x={275} y={79} scale={0.6} />
+                  <path d="M140 61h54v52h-54m0-41h8m39-11v8m7 36h-8m-46 8v-8" stroke="#f45b3d" strokeWidth="2" />
                 </>
               ) : i === 1 ? (
                 <>
@@ -152,17 +154,18 @@ export function Deployment() {
                     stroke="#f45b3d"
                     fill="#f8c7af"
                   />
+                  <g stroke="#f45b3d" strokeWidth="1.6"><path d="M87 119h56v40H87Zm122-17h69v55h-69Z" /><path d="M323 55v46m-6-46h12m-12 46h12" /><text x="286" y="41" stroke="none" fill="#c4472d" fontSize="11">size / distribution</text></g>
+                  <Rock x={89} y={74} size={.4} variant={2} /><Rock x={272} y={55} size={.35} variant={4} />
                 </>
               ) : (
                 <>
-                  <Drill x={170} y={112} scale={0.55} />
-                  <path
-                    d="M249 74h139v70H249Zm13 12h112m-112 18h112m-112 18h112"
-                    stroke="#737578"
-                  />
+                  <path d="M40 60h332l-18 103H28Z" fill="#d8dbde" strokeWidth="3" />
+                  {[0,1,2].map(row=><g key={row} transform={`translate(0 ${row*28})`}><path d="M47 69h307l-4 20H44Z" fill="#747b84" />{[0,1,2,3,4,5,6].map(col=><g key={col}><path d={`M${50+col*42} 69h32v19h-32Z`} fill={col%3===0?'#d7dadd':'#b1b6bd'} strokeWidth="1.3" /><ellipse cx={50+col*42} cy="78.5" rx="4" ry="9.5" fill="#e2e4e6" strokeWidth="1.3" /><path d={`m${64+col*42} 71 3 5-5 7 4 3`} stroke={col%2===0?'#f45b3d':'#777e87'} strokeWidth="2" /></g>)}</g>)}
+                  <path d="M58 51h75v18m0-18h27m-102 0v-15" stroke="#f45b3d" strokeDasharray="4 4" /><text x="56" y="30" fontSize="12" stroke="none" fill="#c4472d">fracture / vein / boundary</text>
                 </>
               )}
             </svg>
+            <span className={styles.opportunityNumber}>0{i+1} / Pilot workflow</span>
             <h3>{w.name}</h3>
             <p>{w.brief}</p>
             <button onClick={() => choose(w.name)}>Explore this pilot ↗</button>
@@ -199,10 +202,21 @@ export function Deployment() {
               : [node],
           )}
       </div>
-      <p className={styles.path}>
-        Collect representative data → validate offline → run in shadow mode →
-        review with people → integrate under site procedures.
-      </p>
+      <h3 className={styles.pipelineTitle}>A rollout path that earns trust</h3>
+      <ol className={styles.path}>
+        {[
+          ["Collect", "Representative footage from the site's own cameras."],
+          ["Validate offline", "Measured against people and site checks."],
+          ["Shadow mode", "Runs alongside operations with no control."],
+          ["Review", "Operators agree what an event is and when to act."],
+          ["Integrate", "Approved alerts connect under site procedures."],
+        ].map(([step, detail]) => (
+          <li key={step}>
+            <strong>{step}</strong>
+            <span>{detail}</span>
+          </li>
+        ))}
+      </ol>
       <div ref={planner} className={styles.planner} id="pilot">
         <h3>Design a mining-CV pilot.</h3>
         <p>
@@ -278,6 +292,10 @@ export function Deployment() {
             </button>
           </div>
         )}
+      </div>
+      <div className={styles.thesis}>
+        <svg viewBox="0 0 90 54" fill="none" stroke="#202227" strokeWidth="2" aria-hidden="true"><path d="M2 45 19 27 31 32 43 8 60 25 72 17 88 45M5 48h79M43 8l-3 19 20-2" /><circle cx="43" cy="8" r="4" fill="#f97832" /><path d="m43 11-13 23m13-23 18 27m-31-4 31 4" stroke="#f45b3d" strokeDasharray="3 4" /></svg>
+        <p>Start with one camera and one decision.<br /><strong>Let the same layer grow across the site.</strong></p>
       </div>
       <footer className={styles.footer}>
         <span>Ultrion · Computer Vision in Mining</span>

@@ -9,6 +9,7 @@ export function JourneyTrack() {
     inJourney = useExperience((s) => s.inJourney);
   const index = sceneRegistry.findIndex((s) => s.id === scene);
   const stages = ["drill","blast","excavation","haul","crusher","conveyor","sorter","froth","survey","thermal"];
+  const context = part === 1 ? "Read the rock" : part === 2 ? "Move the material" : "Recover & inspect";
   return (
     <div
       className={`${styles.track} ${!inJourney ? styles.hidden : ""}`}
@@ -16,19 +17,10 @@ export function JourneyTrack() {
     >
       <div className={styles.routeText}>
         <span className={styles.current}>
-          Part {["I", "II", "III"][part - 1]} / {sceneById[scene].stage}
+          {context} · {sceneById[scene].stage}
         </span>
         <div className={styles.routeLabels}>
-          <span>Drill</span>
-          <span>Blast</span>
-          <span>Dig</span>
-          <span>Haul</span>
-          <span>Crush</span>
-          <span>Convey</span>
-          <span>Sort</span>
-          <span>Recover</span>
-          <span>Survey</span>
-          <span>Inspect</span>
+          {["Geology", "Pit", "Material flow", "Recovery", "Aerial"].map((label,i) => <span key={label} data-current={i === (index < 6 ? 0 : index < 12 ? 1 : index < 17 ? 2 : index < 19 ? 3 : 4)}>{label}</span>)}
         </div>
         <span>{String(progress).padStart(2, "0")}%</span>
       </div>

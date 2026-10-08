@@ -10,7 +10,7 @@ import { Recovery } from "./part-3/Recovery";
 import { Environment } from "../illustrations/Environment";
 import styles from "../styles/Journey.module.css";
 
-export function Scene({ definition: s }: { definition: SceneDefinition }) {
+export function Scene({ definition: s, visual = true }: { definition: SceneDefinition; visual?: boolean }) {
   const ref = useRef<HTMLElement>(null);
   const advanceRef = useRef<gsap.core.Tween | null>(null);
   const removeListenersRef = useRef<(() => void) | null>(null);
@@ -83,7 +83,7 @@ export function Scene({ definition: s }: { definition: SceneDefinition }) {
         )}
         <p>{s.subtitle}</p>
       </div>
-      <div className={styles.art}>
+      {visual && <div className={styles.art}>
         <svg
           viewBox="0 0 1400 790"
           fill="none"
@@ -115,11 +115,11 @@ export function Scene({ definition: s }: { definition: SceneDefinition }) {
           </defs>
           <g data-art="camera-frame"><g data-art="world"><Environment id={s.id}/>{art}</g></g>
         </svg>
-      </div>
+      </div>}
       {mobileNotes[s.id] && <div className={styles.mobileNote}>{mobileNotes[s.id]}</div>}
       {s.id === "arrival" && (
         <div className={styles.introBottom}>
-          <span className={styles.scrollMark}>↓</span>
+          <span className={styles.scrollMark} aria-hidden="true"><i /></span>
           <div>
             <strong>Scroll to enter the mine</strong>
             <br />
@@ -159,15 +159,10 @@ export function Scene({ definition: s }: { definition: SceneDefinition }) {
         </button>
       )}
       {s.id === "finale" && (
-        <div className={styles.thesis}>
-          <span data-art="final-line-1">The mine never stopped moving.</span>
-          <span data-art="final-line-2">
-            Computer Vision never lived in one camera.
-          </span>
-          <span data-art="final-line-3">
-            It became an intelligence layer across the operation.
-          </span>
-        </div>
+        <p className={styles.thesis} data-finale-thesis>
+          <strong>One computer-vision layer.</strong>
+          Twelve decisions, from the first core to the last inspection, read by the same platform.
+        </p>
       )}
       <div className={styles.reducedCopy}>
         {s.capability ? (
