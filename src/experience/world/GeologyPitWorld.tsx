@@ -173,7 +173,7 @@ function Truck() {
         <circle cx="25" cy="42" r="4.5" fill="#ebdcc8" /><circle cx="65" cy="42" r="4.5" fill="#ebdcc8" />
 
         {/* Detailed driver head and clearly readable eyelid cues */}
-        <g data-gp="driver-detail-head" style={{ transformOrigin: '45px 18px' }}>
+        <g data-gp="driver-detail-head">
           <path d="M30 10q3-16 15-16t15 16l4 2H26Z" fill={orange} stroke="#1b1d22" strokeWidth="1.6" />
           <path d="M25 12h40v3.5H25Z" fill="#22262d" />
           <path d="M31 13v12q0 8 14 8t14-8V13Z" fill="#ebdcc8" stroke="#22262d" strokeWidth="1.8" />
