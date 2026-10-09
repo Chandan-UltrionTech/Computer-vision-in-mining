@@ -1,4 +1,9 @@
 import { chromium } from '@playwright/test';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+
+const outDir = path.resolve('test-results/transitions');
+await fs.mkdir(outDir, { recursive: true });
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
@@ -9,44 +14,50 @@ page.on('console', message => {
 page.on('pageerror', error => errors.push(error.message));
 await page.goto('http://localhost:3000');
 await page.waitForLoadState('networkidle');
+await page.waitForTimeout(1000);
 
-async function jump(id, fraction) {
-  const y = await page.evaluate(({ id, fraction }) => {
-    const chapters = [...document.querySelectorAll('[data-scroll-chapter]')];
-    const i = chapters.findIndex(chapter => chapter.dataset.scrollChapter === id);
-    return chapters.slice(0, i).reduce((sum, el) => sum + el.offsetHeight, 0) + chapters[i].offsetHeight * fraction;
-  }, { id, fraction });
-  await page.evaluate(y => window.scrollTo({ top: y, behavior: 'instant' }), y);
-  await page.waitForTimeout(350);
+// Discover all scene chapters in DOM order
+const chapters = await page.evaluate(() => {
+  return Array.from(document.querySelectorAll('[data-scroll-chapter]')).map(el => el.dataset.scrollChapter);
+});
+
+console.log(`Discovered ${chapters.length} scenes. Checking ${chapters.length - 1} transitions.`);
+
+async function jumpTo(sceneId, fraction) {
+  await page.evaluate(({ id, frac }) => {
+    const list = Array.from(document.querySelectorAll('[data-scroll-chapter]'));
+    const idx = list.findIndex(e => e.dataset.scrollChapter === id);
+    if (idx === -1) return;
+    const top = list.slice(0, idx).reduce((acc, el) => acc + el.offsetHeight, 0) + list[idx].offsetHeight * frac;
+    window.scrollTo({ top, behavior: 'instant' });
+  }, { id: sceneId, frac: fraction });
+  await page.waitForTimeout(250);
 }
-for (const [id, fractions] of [
-  ['core', [.82, .9, .98]], ['blast', [.82, .9, .98]],
-  ['fragments', [.8, .9, .98]], ['haul', [.72, .85, .98]],
-  ['conveyor', [.93, .97, .999]], ['thermal', [.85, .93, .99]],
-]) {
-  for (const fraction of fractions) {
-    await jump(id, fraction);
-    await page.screenshot({ path: `test-results/transition-${id}-${fraction}.png` });
+
+let capturedCount = 0;
+for (let i = 0; i < chapters.length - 1; i++) {
+  const sceneA = chapters[i];
+  const sceneB = chapters[i + 1];
+  const pairIndex = String(i + 1).padStart(2, '0');
+  const pairName = `${pairIndex}-${sceneA}-to-${sceneB}`;
+
+  const samplePoints = [
+    { scene: sceneA, frac: 0.90, label: 'A-0.90' },
+    { scene: sceneA, frac: 0.97, label: 'A-0.97' },
+    { scene: sceneA, frac: 0.995, label: 'A-0.995' },
+    { scene: sceneB, frac: 0.005, label: 'B-0.005' },
+    { scene: sceneB, frac: 0.03, label: 'B-0.03' },
+    { scene: sceneB, frac: 0.10, label: 'B-0.10' },
+  ];
+
+  for (const pt of samplePoints) {
+    await jumpTo(pt.scene, pt.frac);
+    const fileName = `${pairName}-${pt.label}.png`;
+    await page.screenshot({ path: path.join(outDir, fileName) });
+    capturedCount++;
   }
 }
-await jump('survey', .3);
-const pacing = await page.evaluate(async () => {
-  const frameTimes = [];
-  const longTasks = [];
-  const observer = new PerformanceObserver(list => longTasks.push(...list.getEntries().map(e => e.duration)));
-  observer.observe({ type: 'longtask', buffered: false });
-  let previous = performance.now();
-  await new Promise(resolve => {
-    function frame(now) {
-      frameTimes.push(now - previous); previous = now;
-      window.scrollBy(0, 8);
-      if (frameTimes.length < 150) requestAnimationFrame(frame); else resolve();
-    }
-    requestAnimationFrame(frame);
-  });
-  observer.disconnect();
-  const sorted = frameTimes.slice(5).sort((a, b) => a - b);
-  return { medianFrameMs: sorted[Math.floor(sorted.length * .5)], p95FrameMs: sorted[Math.floor(sorted.length * .95)], longTasks, sampleFrames: frameTimes.length };
-});
-console.log(JSON.stringify({ errors, pacing }));
+
+console.log(`Successfully captured ${capturedCount} screenshots across ${chapters.length - 1} scene transitions.`);
+console.log(JSON.stringify({ errors: [...new Set(errors)], transitionsReviewed: chapters.length - 1, capturedCount }));
 await browser.close();

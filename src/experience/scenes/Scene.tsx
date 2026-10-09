@@ -8,6 +8,8 @@ import { Geology } from "./part-1/Geology";
 import { Material } from "./part-2/Material";
 import { Recovery } from "./part-3/Recovery";
 import { Environment } from "../illustrations/Environment";
+import { sceneMotionDirection } from "../core/motionDirection";
+import { FinaleSynthesis } from "./FinaleSynthesis";
 import styles from "../styles/Journey.module.css";
 
 export function Scene({ definition: s, visual = true }: { definition: SceneDefinition; visual?: boolean }) {
@@ -23,30 +25,40 @@ export function Scene({ definition: s, visual = true }: { definition: SceneDefin
     contextSafe(() => {
       advanceRef.current?.kill();
       removeListenersRef.current?.();
-      useExperience.getState().detonate();
-      if (
-        !ref.current ||
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      )
+      if (!ref.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        useExperience.getState().detonate();
         return;
+      }
       const chapters = Array.from(document.querySelectorAll<HTMLElement>('[data-scroll-chapter]'));
       const index = chapters.findIndex(chapter => chapter.dataset.scrollChapter === 'blast');
-      const start = chapters.slice(0,index).reduce((sum,chapter) => sum + chapter.offsetHeight,0);
-      if (detonated) window.scrollTo({top:start + chapters[index].offsetHeight * .35,behavior:'instant'});
-      const cursor = {y:window.scrollY};
-      // The button advances the scroll clock. Only the controller animates blast art.
-      const advance = gsap.to(cursor,{
-        y:start + chapters[index].offsetHeight * .7,
-        duration:1.15,ease:'power2.inOut',
-        onUpdate:() => window.scrollTo({top:cursor.y,behavior:'instant'}),
-        onComplete:removeListeners,
+      if (index === -1) return;
+      const start = chapters.slice(0, index).reduce((sum, chapter) => sum + chapter.offsetHeight, 0);
+      const blastHeight = chapters[index].offsetHeight;
+      const currentProgress = (window.scrollY - start) / Math.max(1, blastHeight);
+
+      // If already past detonation threshold or marked detonated, seek to staging first, then animate forward
+      if (detonated || currentProgress >= 0.48) {
+        window.scrollTo({ top: start + blastHeight * 0.35, behavior: 'instant' });
+      }
+      useExperience.getState().detonate();
+
+      const cursor = { y: window.scrollY };
+      const advance = gsap.to(cursor, {
+        y: start + blastHeight * 0.72,
+        duration: 1.15,
+        ease: 'power2.inOut',
+        onUpdate: () => window.scrollTo({ top: cursor.y, behavior: 'instant' }),
+        onComplete: removeListeners,
       });
       advanceRef.current = advance;
       removeListenersRef.current = removeListeners;
-      function interrupt(){advance.kill();removeListeners();}
-      function removeListeners(){window.removeEventListener('wheel',interrupt);window.removeEventListener('touchstart',interrupt);}
-      window.addEventListener('wheel',interrupt,{passive:true});
-      window.addEventListener('touchstart',interrupt,{passive:true});
+      function interrupt() { advance.kill(); removeListeners(); }
+      function removeListeners() {
+        window.removeEventListener('wheel', interrupt);
+        window.removeEventListener('touchstart', interrupt);
+      }
+      window.addEventListener('wheel', interrupt, { passive: true });
+      window.addEventListener('touchstart', interrupt, { passive: true });
     })();
   }
   const mobileNotes: Partial<Record<SceneDefinition['id'], string>> = {
@@ -64,6 +76,8 @@ export function Scene({ definition: s, visual = true }: { definition: SceneDefin
     ) : (
       <Recovery id={s.id} />
     );
+  const dir = sceneMotionDirection[s.id];
+  const isBridge = dir?.captionDirection?.mode === "bridge";
   return (
     <section
       ref={ref}
@@ -71,18 +85,26 @@ export function Scene({ definition: s, visual = true }: { definition: SceneDefin
       data-scene={s.id}
       aria-labelledby={`${s.id}-title`}
     >
-      <div className={styles.title} data-art="title">
-        <div className={styles.part}>
-          <span>Part {["I", "II", "III"][s.part - 1]}</span>
-          <span>{partNames[s.part - 1]}</span>
+      {isBridge ? (
+        <div className={styles.bridgeTitle} data-art="title" data-bridge="true">
+          <p className={styles.bridgePhrase} id={`${s.id}-title`}>
+            {dir.captionDirection.bridgeCopy || s.title}
+          </p>
         </div>
-        {s.id === "arrival" ? (
-          <h1 id={`${s.id}-title`}>{s.title}</h1>
-        ) : (
-          <h2 id={`${s.id}-title`}>{s.title}</h2>
-        )}
-        <p>{s.subtitle}</p>
-      </div>
+      ) : (
+        <div className={styles.title} data-art="title">
+          <div className={styles.part}>
+            <span>Part {["I", "II", "III"][s.part - 1]}</span>
+            <span>{partNames[s.part - 1]}</span>
+          </div>
+          {s.id === "arrival" ? (
+            <h1 id={`${s.id}-title`}>{s.title}</h1>
+          ) : (
+            <h2 id={`${s.id}-title`}>{s.title}</h2>
+          )}
+          <p>{s.subtitle}</p>
+        </div>
+      )}
       {visual && <div className={styles.art}>
         <svg
           viewBox="0 0 1400 790"
@@ -159,12 +181,16 @@ export function Scene({ definition: s, visual = true }: { definition: SceneDefin
         </button>
       )}
       {s.id === "finale" && (
-        <p className={styles.thesis} data-finale-thesis>
-          <strong>One computer-vision layer.</strong>
-          Twelve decisions, from the first core to the last inspection, read by the same platform.
-        </p>
+        <>
+          <p className={styles.thesis} data-finale-thesis>
+            <strong>One computer-vision layer.</strong>
+            Twelve decisions, from the first core to the last inspection, read by the same platform.
+          </p>
+          <FinaleSynthesis />
+        </>
       )}
       <div className={styles.reducedCopy}>
+        {isBridge && <h2 className="sr-only">{s.title}</h2>}
         {s.capability ? (
           <>
             <strong>{String(s.capability.number).padStart(2, "0")} · {s.capability.name}</strong>

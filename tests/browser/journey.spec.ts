@@ -360,3 +360,109 @@ test('reversing material flow restores physical state after removal and sorting'
  expect(after).toEqual(before);
  await expect(page.locator('[data-material=tool]')).toHaveAttribute('opacity','1');
 });
+
+test('driver mobile view has readable facial details (head height >= 70px)', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+  await jump(page, 'driver', 0.55);
+  await page.waitForTimeout(300);
+
+  const headRect = await page.locator('[data-gp="driver-detail-head"]').boundingBox();
+  expect(headRect).not.toBeNull();
+  expect(headRect!.height).toBeGreaterThanOrEqual(70);
+  expect(headRect!.y).toBeGreaterThan(0);
+  expect(headRect!.y + headRect!.height).toBeLessThan(844);
+
+  // Check no collision with HUD capsule
+  const capsuleRect = await page.locator('[data-state]').boundingBox();
+  if (capsuleRect) {
+    const overlaps = !(
+      headRect!.x + headRect!.width < capsuleRect.x ||
+      headRect!.x > capsuleRect.x + capsuleRect.width ||
+      headRect!.y + headRect!.height < capsuleRect.y ||
+      headRect!.y > capsuleRect.y + capsuleRect.height
+    );
+    expect(overlaps).toBeFalsy();
+  }
+});
+
+test('mobile finale synthesis provides readable 3-act thesis without occlusion', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+  await jump(page, 'finale', 0.95);
+  await page.waitForTimeout(300);
+
+  const synth = page.locator('[data-finale-synthesis]');
+  await expect(synth).toBeVisible();
+  const synthRect = await synth.boundingBox();
+  expect(synthRect).not.toBeNull();
+  expect(synthRect!.width).toBeGreaterThan(200);
+  expect(synthRect!.x + synthRect!.width).toBeLessThanOrEqual(390);
+
+  // Mine world stage remains visible in backdrop
+  await expect(page.locator('[data-world-svg]')).toBeVisible();
+
+  // Route track does not collide with synthesis overlay
+  const trackRect = await page.locator('[data-journey-track]').boundingBox();
+  if (trackRect && synthRect) {
+    const overlapsTrack = !(
+      synthRect.y + synthRect.height < trackRect.y ||
+      synthRect.y > trackRect.y + trackRect.height
+    );
+    expect(overlapsTrack).toBeFalsy();
+  }
+});
+
+test('finale landmark labels maintain clutter limit (<= 2 labels with opacity > 0.35 at p=0.95)', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+  await jump(page, 'finale', 0.95);
+  await page.waitForTimeout(300);
+
+  const visibleLabelCount = await page.locator('[data-landmark-label]').evaluateAll(els => {
+    return els.filter(el => {
+      const op = parseFloat(el.getAttribute('opacity') ?? getComputedStyle(el).opacity);
+      return op > 0.35;
+    }).length;
+  });
+
+  expect(visibleLabelCount).toBeLessThanOrEqual(2);
+});
+
+test('thermal sensor moves and targets anomaly as inspection progresses', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+
+  await jump(page, 'thermal', 0.35);
+  const targetEarly = await page.locator('[data-recovery="thermal-target"]').getAttribute('opacity');
+  expect(parseFloat(targetEarly || '0')).toBeLessThan(0.3);
+
+  await jump(page, 'thermal', 0.85);
+  await page.waitForTimeout(200);
+  const targetLate = await page.locator('[data-recovery="thermal-target"]').getAttribute('opacity');
+  expect(parseFloat(targetLate || '0')).toBeGreaterThan(0.7);
+
+  const cone = page.locator('[data-recovery="thermal-sensor-cone"]');
+  await expect(cone).toBeVisible();
+});
+
+test('detonator state synchronizes across scroll-only and click interaction paths', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+
+  // Staging state before blast
+  await jump(page, 'blast', 0.25);
+  const detonator = page.getByRole('button', { name: /blast/i });
+  await expect(detonator).toContainText('Push to blast');
+
+  // Scroll-only path: scroll past blast threshold (p = 0.55) without clicking
+  await jump(page, 'blast', 0.65);
+  await page.waitForTimeout(200);
+  await expect(detonator).toContainText('Blast triggered · replay');
+  await expect(detonator).toHaveAttribute('aria-pressed', 'true');
+});

@@ -22,6 +22,17 @@ export function PersistentWorldStage() {
         <MaterialFlowWorld />
         <g transform={`translate(${RECOVERY_SHIFT} 0)`}><RecoveryWorld /></g>
         <g data-finale-signals className="cv-layer" data-art="cv">
+          {/* Subtle journey network route connecting all 12 capabilities across the one world */}
+          <path
+            data-finale-network-route
+            d={`M${landmarks.map((l, i) => `${l.x} ${l.y - (i % 2 ? 72 : 48)}`).join(" L")}`}
+            fill="none"
+            stroke="#f45b3d"
+            strokeWidth="2"
+            strokeDasharray="6 6"
+            strokeOpacity="0.45"
+            opacity="0"
+          />
           {landmarks.map((l, i) => <g key={l.number} data-landmark-signal={l.number} data-x={l.x} data-y={l.y} transform={`translate(${l.x} ${l.y})`} opacity="0">
             <circle r="5" fill="#f45b3d" stroke="none" />
             <path d={`M0-4V-${i % 2 ? 58 : 34}`} stroke="#f45b3d" strokeWidth="1.5" strokeDasharray="3 3" />

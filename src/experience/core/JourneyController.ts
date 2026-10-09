@@ -5,15 +5,29 @@ import { sceneRegistry } from "./sceneRegistry";
 import { storyAt } from "./storyBeats";
 import { useExperience } from "../store/experienceStore";
 import { createStageDirector } from "../world/StageDirector";
-import { ramp } from "../world/actors";
+import { after, ramp } from "../world/actors";
+import { sceneMotionDirection } from "./motionDirection";
 import type { SceneId } from "./types";
 
-/** Narration is a caption over the film: it arrives after the camera settles and leaves before CV explains. */
-function captionAt(id: SceneId, p: number, hasCapability: boolean) {
+/** Narration choreography: timed to discovery per scene; minimal for bridge handoffs. */
+export function captionAt(id: SceneId, p: number) {
+  const dir = sceneMotionDirection[id];
+  const cap = dir?.captionDirection ?? {
+    mode: "capability",
+    fadeInStart: 0.08,
+    fadeInEnd: 0.17,
+    fadeOutStart: 0.45,
+    fadeOutEnd: 0.55,
+    maxOpacity: 1,
+  };
   if (id === "arrival") return { opacity: 1 - ramp(p, .3, .7), y: -ramp(p, .25, .8) * 40 };
-  if (id === "finale") return { opacity: ramp(p, .84, .94), y: (1 - ramp(p, .84, .96)) * 14 };
-  const out = hasCapability ? ramp(p, .5, .62) : ramp(p, .78, .9);
-  return { opacity: Math.min(ramp(p, .05, .15), 1 - out), y: (1 - ramp(p, .05, .2)) * 12 - out * 16 };
+  if (id === "finale") return { opacity: ramp(p, cap.fadeInStart, cap.fadeInEnd), y: (1 - ramp(p, cap.fadeInStart, cap.fadeInEnd)) * 14 };
+  const inT = ramp(p, cap.fadeInStart, cap.fadeInEnd);
+  const outT = ramp(p, cap.fadeOutStart, cap.fadeOutEnd);
+  const maxOp = cap.maxOpacity ?? 1;
+  const opacity = Math.min(inT, 1 - outT) * maxOp;
+  const y = (1 - inT) * 12 - outT * 16;
+  return { opacity, y };
 }
 
 /** Maps scroll to one semantic position. The stage director owns everything that is drawn. */
@@ -28,7 +42,9 @@ export class JourneyController {
       const chapters = Array.from(this.root.querySelectorAll<HTMLElement>("[data-scroll-chapter]"));
       const titles = panels.map(panel => panel.querySelector<HTMLElement>("[data-art=title]"));
       const finale = this.root.querySelector<HTMLElement>("[data-finale-thesis]");
+      const finaleSynthesis = this.root.querySelector<HTMLElement>("[data-finale-synthesis]");
       const rail = document.querySelector<HTMLElement>("[data-rail-fill]");
+      const trackEl = document.querySelector<HTMLElement>("[data-journey-track]");
       let disposed = false;
       const cleanups: (() => void)[] = [];
       if (reduced) {
@@ -60,6 +76,7 @@ export class JourneyController {
             accumulated += lengths[i];
           }
           const p = gsap.utils.clamp(0, 1, (scroll - accumulated) / lengths[index]);
+          const journeyProgress = total > 0 ? gsap.utils.clamp(0, 1, scroll / total) : 0;
           const scene = sceneRegistry[index];
           if (index !== lastIndex) {
             panels.forEach((panel, i) => {
@@ -72,13 +89,39 @@ export class JourneyController {
             lastIndex = index;
           }
           stage.render(scene.id, p);
-          const caption = captionAt(scene.id, p, Boolean(scene.capability));
+          const caption = captionAt(scene.id, p);
           const title = titles[index];
           if (title) { title.style.opacity = caption.opacity.toFixed(3); title.style.transform = `translate3d(0, ${caption.y.toFixed(1)}px, 0)`; }
           if (finale) finale.style.opacity = scene.id === "finale" ? ramp(p, .88, .97).toFixed(3) : "0";
-          const progress = (accumulated + p * lengths[index]) / total;
-          if (rail) rail.style.transform = `scaleX(${progress})`;
-          const state = storyAt(scene.id, p), pct = Math.round(progress * 100);
+          if (finaleSynthesis) {
+            const synthActive = scene.id === "finale" && p >= 0.70;
+            finaleSynthesis.setAttribute("data-active", synthActive ? "true" : "false");
+            finaleSynthesis.style.opacity = synthActive ? ramp(p, 0.70, 0.85).toFixed(3) : "0";
+          }
+          const isHero = sceneMotionDirection[scene.id]?.role === "hero";
+          const isHeroPeak = isHero && p > .22 && p < .82;
+          if (rail) {
+            rail.style.transform = `scaleX(${journeyProgress})`;
+            rail.style.opacity = isHeroPeak ? ".45" : "1";
+          }
+          if (trackEl) {
+            trackEl.setAttribute("data-quiet", isHeroPeak ? "true" : "false");
+          }
+
+          // Causal blast state synchronization
+          if (scene.id === "blast") {
+            if (p >= 0.48 && !useExperience.getState().detonated) {
+              useExperience.getState().detonate();
+            } else if (p < 0.35 && useExperience.getState().detonated) {
+              useExperience.getState().setDetonated(false);
+            }
+          } else if (after(scene.id, "blast")) {
+            if (!useExperience.getState().detonated) useExperience.getState().detonate();
+          } else {
+            if (useExperience.getState().detonated) useExperience.getState().setDetonated(false);
+          }
+
+          const state = storyAt(scene.id, p), pct = Math.round(journeyProgress * 100);
           const transition = p > .9 || (index > 0 && p < .1);
           const key = `${scene.id}:${state}:${pct}:${transition}`;
           if (key !== lastKey) { useExperience.getState().setSemantic({ scene: scene.id, state, part: scene.part, progress: pct, transition }); lastKey = key; }

@@ -29,6 +29,7 @@ interface ExperienceState {
   ) => void;
   toggleCV: () => void;
   detonate: () => void;
+  setDetonated: (detonated: boolean) => void;
 }
 export const useExperience = create<ExperienceState>((set) => ({
   scene: "arrival",
@@ -44,4 +45,5 @@ export const useExperience = create<ExperienceState>((set) => ({
   setSemantic: (value) => set(value),
   toggleCV: () => set((s) => ({ cvEnabled: !s.cvEnabled })),
   detonate: () => set({ detonated: true }),
+  setDetonated: (detonated) => set({ detonated }),
 }));

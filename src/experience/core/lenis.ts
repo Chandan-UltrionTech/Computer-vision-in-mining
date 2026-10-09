@@ -6,8 +6,8 @@ export function createSmoothScroll(mobile = false) {
   const lenis = new Lenis({
     autoRaf: false,
     smoothWheel: !mobile,
-    lerp: .14,
-    wheelMultiplier: .95,
+    lerp: .18,
+    wheelMultiplier: 1.0,
     anchors: true,
   });
   const tick = (time: number) => lenis.raf(time * 1000);

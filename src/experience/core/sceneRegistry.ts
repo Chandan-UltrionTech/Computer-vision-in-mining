@@ -1,5 +1,6 @@
 import type { Capability, SceneDefinition, SceneId, Handoff } from "./types";
 import { createSceneTimeline } from "../scenes/timelines";
+import { sceneMotionDirection } from "./motionDirection";
 const cv = (
   number: number,
   name: string,
@@ -329,8 +330,8 @@ export const sceneRegistry: SceneDefinition[] = rows.map(
     subtitle,
     stage,
     handoff,
-    scrollLength,
-    mobileLength: Math.max(.85, scrollLength * (id === "froth" ? .8 : id === "survey" ? .76 : .64)),
+    scrollLength: sceneMotionDirection[id]?.desktopLength ?? scrollLength,
+    mobileLength: sceneMotionDirection[id]?.mobileLength ?? Math.max(0.6, scrollLength * 0.7),
     anchor: anchor ?? "center",
     capability: capabilities[id as keyof typeof capabilities],
     desktopTimeline: createSceneTimeline(id),

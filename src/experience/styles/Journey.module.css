@@ -38,6 +38,57 @@
 .art svg{width:100%;height:100%;display:block}
 .mobileNote{display:none}
 .journey[data-ambient="paused"] [data-ambient]{animation-play-state:paused!important}
+.journey[data-ambient-level="0"] [data-ambient]{animation-play-state:paused!important;opacity:.35;}
+.journey[data-ambient-level="1"] [data-ambient]:not([data-ambient="beacon"]){opacity:.55;}
+.journey[data-ambient-scene="froth"] [data-ambient="bubbles"]{animation-play-state:running!important;opacity:1!important;}
+.journey[data-ambient-scene="survey"] [data-ambient="rotor"],
+.journey[data-ambient-scene="thermal"] [data-ambient="rotor"]{animation-play-state:running!important;opacity:1!important;}
+.journey[data-ambient-scene="driver"] [data-ambient]{animation-play-state:paused!important;opacity:.2;}
+.journey[data-ambient-scene="blast"][data-ambient-level="0"] [data-ambient]{animation-play-state:paused!important;opacity:.15;}
+
+/* Bridge scenes: suppress major chapter presentation ceremony */
+.scene[data-scene="excavation"] .title h2,
+.scene[data-scene="loading"] .title h2,
+.scene[data-scene="slurry"] .title h2,
+.scene[data-scene="crusher"] .title h2,
+.scene[data-scene="stockpile"] .title h2 {
+  font-size: clamp(16px, 1.3vw, 20px);
+  color: #6b717b;
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+.scene[data-scene="excavation"] .title p,
+.scene[data-scene="loading"] .title p,
+.scene[data-scene="slurry"] .title p,
+.scene[data-scene="crusher"] .title p,
+.scene[data-scene="stockpile"] .title p {
+  font-size: 11px;
+  color: #8c929a;
+  margin-top: 4px;
+}
+
+.bridgeTitle {
+  position: absolute;
+  top: 114px;
+  left: 6%;
+  z-index: 5;
+  pointer-events: none;
+  max-width: 320px;
+}
+
+.bridgePhrase {
+  font-size: 15px;
+  font-weight: 500;
+  color: #5c626d;
+  letter-spacing: -0.2px;
+  margin: 0;
+  font-style: italic;
+}
+
+.finaleSynthesis {
+  display: none;
+}
+
 .journey [data-ambient="drift-slow"]{animation:drift 90s linear infinite alternate}
 .journey [data-ambient="birds"]{animation:birds 26s ease-in-out infinite alternate}
 .journey [data-ambient="haul-distant"]{animation:haulDistant 40s linear infinite}
@@ -72,6 +123,16 @@
  .detonator{width:96px;font-size:10px}
  .detonator svg{width:50px;height:64px}
  .thesis{top:210px;left:6%;font-size:12.5px;max-width:300px}
+ .scene[data-scene="finale"] .title, .scene[data-scene="finale"] .thesis{display:none}
+ .bridgeTitle{top:92px;left:6%;max-width:280px}
+ .bridgePhrase{font-size:13px}
+ .finaleSynthesis{display:flex;flex-direction:column;position:absolute;top:92px;left:6%;right:6%;max-width:340px;gap:8px;pointer-events:none;z-index:10;opacity:0;transition:opacity .3s ease}
+ .synthesisHeader{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent)}
+ .synthesisHeadline{font-size:15px;font-weight:700;line-height:1.2;color:#17191c;letter-spacing:-.3px}
+ .synthesisActs{display:flex;flex-direction:column;gap:6px;border-left:2px solid rgba(244,91,61,.4);padding-left:8px}
+ .synthesisAct{display:flex;flex-direction:column;gap:1px}
+ .synthesisActTitle{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#2b3038}
+ .synthesisActList{font-size:9.5px;line-height:1.3;color:#5a616c}
 }
 @media(max-height:740px) and (max-width:767px){.title h2{font-size:20px}.title p{font-size:10.5px}.scene[data-scene="arrival"] .title{top:13%}.scene[data-scene="arrival"] .title h1{font-size:46px}}
 @media(prefers-reduced-motion:reduce){

@@ -65,7 +65,9 @@ export function RecoveryWorld() {
   return <g data-world-part="recovery" stroke={INK} strokeWidth="3" strokeLinejoin="round" strokeLinecap="round">
     <defs>
       <clipPath id="recovery-pile-clip"><path d={mound} /></clipPath>
-      <clipPath id="recovery-thermal-clip"><rect data-recovery="thermal-wipe" x="6620" y="255" width="0" height="435" /></clipPath>
+      <clipPath id="recovery-thermal-clip">
+        <ellipse data-recovery="thermal-footprint" cx="6820" cy="460" rx="0" ry="0" />
+      </clipPath>
     </defs>
     <g data-landmark="plant-backbone">
       <path d="M4540 720h1395m-1395-14h1395" stroke="#9298a0" strokeWidth="1.5" />
@@ -145,8 +147,11 @@ export function RecoveryWorld() {
       <path d="M6480 683v56l50 21 49-30v-49m-99 0h99m-99 0 99 47m-50-45v77" strokeDasharray="4 6" />
       <text x="6460" y="796" stroke="none" fill="#b7462b" fontSize="13">void geometry · cutaway</text>
     </g>
+    <g className="cv-layer" data-art="cv" data-recovery="thermal-sensor-cone" fill="rgba(244,91,61,0.045)" stroke="#f45b3d" strokeWidth="1.2" strokeOpacity="0.45" strokeDasharray="4 4" opacity="0">
+      <polygon data-recovery="sensor-cone-poly" points="6800,240 6680,480 6960,480" />
+    </g>
     <g className="cv-layer" data-art="cv" data-recovery="thermal" clipPath="url(#recovery-thermal-clip)" opacity="0">
-      <path d="M6641 654 6700 407 6817 273 6926 324 7009 348 7093 434 7180 386 7314 641Z" fill="#f5bc89" fillOpacity=".62" stroke="none" />
+      <path d="M6641 654 6700 407 6817 273 6926 324 7009 348 7093 434 7180 386 7314 641Z" fill="#f5bc89" fillOpacity=".26" stroke="none" />
       <path d="M6803 431q65-23 83 26t-21 75q-49 35-71-16t9-85m257 86q64-32 101 22t-34 66q-65 14-84-31t17-57" fill="#f47544" fillOpacity=".8" stroke="#ef854e" strokeWidth="1.5" />
       <path d="M6822 459q26-14 35 14t-17 38q-24 2-26-22t8-30m285 79q28-8 36 12t-30 26q-24-2-20-17t14-21" fill="#c9452a" stroke="none" />
       <path d="M6796 420h96v121h-96Z" fill="none" stroke="#b83b26" strokeDasharray="7 5" />
@@ -210,15 +215,57 @@ export function updateRecovery(root: SVGElement, scene: SceneId, progress: numbe
   const survey = scene === "survey" ? p : scene === "thermal" || scene === "finale" ? 1 : 0;
   const surveyExit = scene === "survey" ? 1 - ramp(p, .9, .99) : 0;
   const finalIntel = scene === "finale" ? ramp(p, .34, .56) : 0;
-  opacity("capture", surveyExit * ramp(survey, beatAt("survey", "imageCapture", .28), .34) * (1 - ramp(survey, .63, .8)));
-  opacity("cloud", Math.max(surveyExit * ramp(survey, beatAt("survey", "featurePoints", .4), .59), finalIntel));
-  opacity("mesh", Math.max(surveyExit * ramp(survey, beatAt("survey", "meshBuild", .63), .77), finalIntel));
+
+  // Progressive visual replacement: capture cues -> feature points -> clean mesh -> measurement
+  const captureIn = ramp(survey, beatAt("survey", "imageCapture", .28), .34);
+  const captureOut = ramp(survey, .46, .56);
+  opacity("capture", surveyExit * captureIn * (1 - captureOut));
+
+  const cloudIn = ramp(survey, beatAt("survey", "featurePoints", .4), .50);
+  const cloudOut = ramp(survey, .62, .76);
+  // In finale, do NOT accumulate cloud; only clean mesh
+  opacity("cloud", surveyExit * cloudIn * (1 - cloudOut));
+
+  const meshIn = ramp(survey, beatAt("survey", "meshBuild", .63), .76);
+  opacity("mesh", Math.max(surveyExit * meshIn, finalIntel));
+
   opacity("measure", surveyExit * ramp(survey, beatAt("survey", "measurement", .83), .89));
 
+  // Spatially motivated thermal reveal: drone infrared sensor footprint illuminates terrain
   const thermal = scene === "thermal" ? p : scene === "finale" ? 1 : 0;
   const thermalIntel = scene === "thermal" ? 1 - ramp(p, .9, .99) : finalIntel;
-  set("thermal-wipe", "width", 700 * ramp(thermal, beatAt("thermal", "thermalWipe", .4), .78));
-  opacity("thermal", thermalIntel);
-  opacity("thermal-target", thermalIntel * ramp(thermal, .76, .825));
+
+  if (scene === "thermal") {
+    const footprintStart = beatAt("thermal", "thermalWipe", .38);
+    const scanT = ramp(p, footprintStart, .82);
+    const footprintIn = ramp(p, footprintStart, footprintStart + .08);
+
+    const fcx = mix(6740, 6860, scanT);
+    const fcy = mix(440, 480, scanT);
+    const frx = 160 * footprintIn;
+    const fry = 210 * footprintIn;
+
+    set("thermal-footprint", "cx", fcx.toFixed(1));
+    set("thermal-footprint", "cy", fcy.toFixed(1));
+    set("thermal-footprint", "rx", frx.toFixed(1));
+    set("thermal-footprint", "ry", fry.toFixed(1));
+
+    const polyPoints = `${drone.x.toFixed(1)},${(drone.y + 12).toFixed(1)} ${(fcx - frx * 0.9).toFixed(1)},${(fcy + 40).toFixed(1)} ${(fcx + frx * 0.9).toFixed(1)},${(fcy + 40).toFixed(1)}`;
+    set("sensor-cone-poly", "points", polyPoints);
+    opacity("thermal-sensor-cone", footprintIn * (1 - ramp(p, .86, .96)));
+  } else if (scene === "finale") {
+    set("thermal-footprint", "cx", "6860");
+    set("thermal-footprint", "cy", "480");
+    set("thermal-footprint", "rx", "260");
+    set("thermal-footprint", "ry", "220");
+    opacity("thermal-sensor-cone", 0);
+  } else {
+    set("thermal-footprint", "rx", "0");
+    set("thermal-footprint", "ry", "0");
+    opacity("thermal-sensor-cone", 0);
+  }
+
+  opacity("thermal", thermalIntel * ramp(thermal, .36, .44));
+  opacity("thermal-target", thermalIntel * ramp(thermal, .74, .82));
   opacity("network", finalIntel);
 }

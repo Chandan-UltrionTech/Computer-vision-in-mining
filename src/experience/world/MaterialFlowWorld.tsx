@@ -1,7 +1,7 @@
 import type { SceneId } from '../core/types';
 import { beatAt, storyAt } from '../core/storyBeats';
 import { Belt, Camera, Rock, Worker } from '../illustrations/Primitives';
-import { PLANT_X } from './actors';
+import { PLANT_X, materialFlowState } from './actors';
 
 const feed = Array.from({ length: 25 }, (_, i) => ({
   size: .38 + (i % 5) * .085,
@@ -99,63 +99,102 @@ export function MaterialFlowWorld() {
   </g>;
 }
 
+const flowCache = new WeakMap<SVGElement, {
+  material: Map<string, SVGElement>;
+  particles: SVGElement[];
+  beltFlows: SVGElement[];
+}>();
+
 /** Stateless seek: forward, reverse and skipped scenes produce identical physical state. */
 export function updateMaterialFlow(root: SVGElement, scene: SceneId, progress: number) {
   const world = root.querySelector<SVGGElement>('[data-world-part="material-flow"]');
   if (!world) return;
+
+  let cached = flowCache.get(world);
+  if (!cached) {
+    const matMap = new Map<string, SVGElement>();
+    world.querySelectorAll<SVGElement>('[data-material]').forEach(el => {
+      const name = el.dataset.material;
+      if (name) matMap.set(name, el);
+    });
+    cached = {
+      material: matMap,
+      particles: Array.from(world.querySelectorAll<SVGElement>('[data-feed-particle]')),
+      beltFlows: Array.from(world.querySelectorAll<SVGElement>('[data-art="belt-flow"]')),
+    };
+    flowCache.set(world, cached);
+  }
+
   const p = clamp(progress);
   const ids: SceneId[] = ['crusher','conveyor','sizing','sorter','slurry','froth','stockpile','survey','thermal','finale'];
   const index = ids.indexOf(scene);
   const phase = index < 0 ? 0 : Math.min(index + p, 4);
-  const q = (name: string) => world.querySelector<SVGElement>(`[data-material="${name}"]`);
+
+  const q = (name: string) => cached!.material.get(name);
   const attr = (name: string, key: string, value: string | number) => q(name)?.setAttribute(key, String(value));
   const opacity = (name: string, n: number) => attr(name, 'opacity', n);
-  world.setAttribute('data-story-state', storyAt(scene,p));
+
+  world.setAttribute('data-story-state', storyAt(scene, p));
   world.setAttribute('data-material-scene', scene);
-  // Material advances, rests while the foreign object is retrieved, then resumes.
-  const beltStep = scene === 'conveyor' ? 220 * (p < .7 ? p : .7 + span(p,.9,1)*.3) : 220 * p;
-  const travel = index <= 0 ? 220*p : index === 1 ? 220+beltStep : 220*Math.min(index,4)+220*p;
-  const split = scene === 'sorter' ? smooth(span(p,beatAt('sorter','airJetFires',.63),.91)) : index > 3 ? 1 : 0;
-  world.querySelectorAll<SVGElement>('[data-feed-particle]').forEach((particle,i) => {
-    let x = 500 + ((i*38+travel)%1400);
-    let y = 548 - (i%3)*3;
-    if (i===4 && split>0) { x = 1451 + split*48; y = 548 + split*127; }
-    else if (x>1450) y -= (x-1450)*.238;
+
+  // Material advances, visibly freezes while the foreign object is retrieved, then resumes.
+  const flowState = materialFlowState(scene, p);
+  const beltStep = flowState.beltStep;
+  const travel = flowState.travel;
+  const split = scene === 'sorter' ? smooth(span(p, beatAt('sorter', 'airJetFires', .63), .91)) : index > 3 ? 1 : 0;
+
+  cached.particles.forEach((particle, i) => {
+    let x = 500 + ((i * 38 + travel) % 1400);
+    let y = 548 - (i % 3) * 3;
+    if (i === 4 && split > 0) { x = 1451 + split * 48; y = 548 + split * 127; }
+    else if (x > 1450) y -= (x - 1450) * .238;
     particle.setAttribute('transform', `translate(${x.toFixed(2)} ${y.toFixed(2)})`);
     const contour = particle.querySelector<SVGElement>('[data-material="particle-contour"]');
-    contour?.setAttribute('opacity', scene==='sizing' && p>=beatAt('sizing','particlesSegmented',.29) && x>930 && x<1290 ? '1' : '0');
-    particle.querySelector('[data-material="particle-span"]')?.setAttribute('opacity',p>=beatAt('sizing','spansMeasured',.5)?'1':'0');
+    contour?.setAttribute('opacity', scene === 'sizing' && p >= beatAt('sizing', 'particlesSegmented', .29) && x > 930 && x < 1290 ? '1' : '0');
+    particle.querySelector('[data-material="particle-span"]')?.setAttribute('opacity', p >= beatAt('sizing', 'spansMeasured', .5) ? '1' : '0');
   });
-  world.querySelectorAll<SVGElement>('[data-art="belt-flow"]').forEach(el=>el.setAttribute('stroke-dashoffset',String(-travel)));
-  const crush = scene==='crusher' ? smooth(span(p,.72,.97)) : index>0 ? 1 : 0;
-  attr('jaw-left','transform',`translate(${Math.sin(crush*Math.PI)*17} 0)`);
-  attr('jaw-right','transform',`translate(${-Math.sin(crush*Math.PI)*17} 0)`);
-  const intoGrinder = scene==='slurry' ? smooth(span(p,0,.45)) : index>4 ? 1 : 0;
-  const materialPhase = index===1 ? 1+beltStep/220 : phase;
-  const heroX = (materialPhase<=1 ? 507 : materialPhase<=2 ? 507+(materialPhase-1)*315 : materialPhase<=3 ? 822+(materialPhase-2)*428 : 1250+(materialPhase-3)*590) + intoGrinder*60;
-  const heroY = phase<=1 ? 379+crush*163 : phase>=4 ? 455+intoGrinder*25 : heroX>1450 ? 548-(heroX-1450)*.238 : 548;
-  attr('crusher-hero','transform',`translate(${heroX.toFixed(2)} ${heroY.toFixed(2)}) scale(${(1-crush*.65-intoGrinder*.29).toFixed(3)})`);
-  // The hero rock is one of the truck's rocks: it exists only after the dump reaches the hopper.
-  opacity('crusher-hero', index<0 ? 0 : scene==='crusher' ? span(p,.64,.7) : scene==='slurry' ? 1-span(p,.4,.5) : index>4 ? 0 : 1);
-  const activeHazard = scene==='conveyor';
-  const fall = smooth(span(p,.08,.32));
-  const advance = span(p,.32,.7)*143;
-  const retrieve = smooth(span(p,.78,.9));
-  const toolX = activeHazard ? 735+advance+retrieve*61 : index>1 ? 939 : 735;
-  const toolY = activeHazard ? 285+fall*256-retrieve*114 : 285;
-  attr('tool','transform',`translate(${toolX} ${toolY}) rotate(${activeHazard?(1-fall)*-28:0})`);
-  opacity('tool',activeHazard && p<.91 ? 1 : 0);
-  opacity('hazard-cv',activeHazard ? span(p,beatAt('conveyor','cameraWakes',.42),beatAt('conveyor','cameraWakes',.42)+.04)*(1-span(p,.9,.97)) : 0);
-  attr('hazard-box','transform',`translate(${toolX} ${toolY})`);
-  opacity('hazard-box',activeHazard && p>=beatAt('conveyor','objectDetected',.54) && p<.91 ? 1 : 0);
-  opacity('belt-action-label',activeHazard && p>=beatAt('conveyor','beltResponse',.7) && p<.91 ? 1 : 0);
-  attr('alarm','fill',activeHazard && p>=.7 && p<.91 ? '#f45b3d' : '#9ba3ac');
-  attr('retrieval-arm','transform',`rotate(${activeHazard?-retrieve*26:0} 961 583)`);
-  const tail = 1-span(p,.9,.98);
-  opacity('sizing-cv',scene==='sizing' ? span(p,beatAt('sizing','particlesSegmented',.29),beatAt('sizing','particlesSegmented',.29)+.04)*tail : 0);
-  opacity('distribution',scene==='sizing' ? span(p,beatAt('sizing','distributionComplete',.81),beatAt('sizing','distributionComplete',.81)+.04) : 0);
-  opacity('sorter-cv',scene==='sorter' ? span(p,beatAt('sorter','particleScanned',.3),beatAt('sorter','particleScanned',.3)+.04)*tail : 0);
-  opacity('classification',scene==='sorter' && p>=beatAt('sorter','classification',.48)?1:0);
-  opacity('jet',scene==='sorter' && p>=beatAt('sorter','airJetFires',.63) && p<.8 ? 1 : 0);
-  opacity('separated',scene==='sorter' && p>=beatAt('sorter','streamsSeparated',.91)?1:0);
+
+  cached.beltFlows.forEach(el => el.setAttribute('stroke-dashoffset', String(-travel)));
+
+  const crush = scene === 'crusher' ? smooth(span(p, .72, .97)) : index > 0 ? 1 : 0;
+  attr('jaw-left', 'transform', `translate(${Math.sin(crush * Math.PI) * 17} 0)`);
+  attr('jaw-right', 'transform', `translate(${-Math.sin(crush * Math.PI) * 17} 0)`);
+
+  const intoGrinder = scene === 'slurry' ? smooth(span(p, 0, .45)) : index > 4 ? 1 : 0;
+  const materialPhase = index === 1 ? 1 + beltStep / 220 : phase;
+  const heroX = (materialPhase <= 1 ? 507 : materialPhase <= 2 ? 507 + (materialPhase - 1) * 315 : materialPhase <= 3 ? 822 + (materialPhase - 2) * 428 : 1250 + (materialPhase - 3) * 590) + intoGrinder * 60;
+  const heroY = phase <= 1 ? 379 + crush * 163 : phase >= 4 ? 455 + intoGrinder * 25 : heroX > 1450 ? 548 - (heroX - 1450) * .238 : 548;
+  attr('crusher-hero', 'transform', `translate(${heroX.toFixed(2)} ${heroY.toFixed(2)}) scale(${(1 - crush * .65 - intoGrinder * .29).toFixed(3)})`);
+  opacity('crusher-hero', index < 0 ? 0 : scene === 'crusher' ? span(p, .64, .7) : scene === 'slurry' ? 1 - span(p, .4, .5) : index > 4 ? 0 : 1);
+
+  // Flagship conveyor sequence:
+  // Tool falls with gravity -> physical bounce on belt -> travels -> detected -> belt stops -> retrieved -> flow resumes
+  const activeHazard = scene === 'conveyor';
+  const fallT = span(p, .08, .26);
+  const fall = fallT * fallT;
+  const bounce = p > .26 && p < .36 ? Math.sin((p - .26) / .1 * Math.PI) * 12 : 0;
+  const advance = span(p, .34, .7) * 143;
+  const retrieve = smooth(span(p, .78, .9));
+
+  const toolX = activeHazard ? 735 + advance + retrieve * 61 : index > 1 ? 939 : 735;
+  const toolY = activeHazard ? 285 + fall * 256 - bounce - retrieve * 114 : 285;
+  attr('tool', 'transform', `translate(${toolX} ${toolY}) rotate(${activeHazard ? (1 - fallT) * -28 : 0})`);
+  opacity('tool', activeHazard && p < .91 ? 1 : 0);
+
+  opacity('hazard-cv', activeHazard ? span(p, beatAt('conveyor', 'cameraWakes', .42), beatAt('conveyor', 'cameraWakes', .42) + .04) * (1 - span(p, .9, .97)) : 0);
+  attr('hazard-box', 'transform', `translate(${toolX} ${toolY})`);
+  opacity('hazard-box', activeHazard && p >= beatAt('conveyor', 'objectDetected', .54) && p < .91 ? 1 : 0);
+  opacity('belt-action-label', activeHazard && p >= beatAt('conveyor', 'beltResponse', .7) && p < .91 ? 1 : 0);
+
+  const beltStopped = activeHazard && p >= .7 && p < .91;
+  attr('alarm', 'fill', beltStopped ? '#f45b3d' : '#9ba3ac');
+  attr('retrieval-arm', 'transform', `rotate(${activeHazard ? -retrieve * 26 : 0} 961 583)`);
+
+  const tail = 1 - span(p, .9, .98);
+  opacity('sizing-cv', scene === 'sizing' ? span(p, beatAt('sizing', 'particlesSegmented', .29), beatAt('sizing', 'particlesSegmented', .29) + .04) * tail : 0);
+  opacity('distribution', scene === 'sizing' ? span(p, beatAt('sizing', 'distributionComplete', .81), beatAt('sizing', 'distributionComplete', .81) + .04) : 0);
+  opacity('sorter-cv', scene === 'sorter' ? span(p, beatAt('sorter', 'particleScanned', .3), beatAt('sorter', 'particleScanned', .3) + .04) * tail : 0);
+  opacity('classification', scene === 'sorter' && p >= beatAt('sorter', 'classification', .48) ? 1 : 0);
+  opacity('jet', scene === 'sorter' && p >= beatAt('sorter', 'airJetFires', .63) && p < .8 ? 1 : 0);
+  opacity('separated', scene === 'sorter' && p >= beatAt('sorter', 'streamsSeparated', .91) ? 1 : 0);
 }

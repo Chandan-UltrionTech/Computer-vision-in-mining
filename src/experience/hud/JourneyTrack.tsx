@@ -13,6 +13,7 @@ export function JourneyTrack() {
   return (
     <div
       className={`${styles.track} ${!inJourney ? styles.hidden : ""}`}
+      data-journey-track
       aria-label={`Journey progress: ${progress} percent. ${sceneById[scene].stage}.`}
     >
       <div className={styles.routeText}>

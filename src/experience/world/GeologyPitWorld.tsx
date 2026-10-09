@@ -1,7 +1,7 @@
 import type { SceneId } from '../core/types';
 import { storyAt } from '../core/storyBeats';
 import { Camera, Distribution, Drill, Rock, rockShapes, Worker } from '../illustrations/Primitives';
-import { after, bucketWorld, clamp, excavatorPose, gravity, heavy, mix as lerp, ramp, smooth, truckPose } from './actors';
+import { after, bucketWorld, clamp, excavatorPose, gravity, heavy, mix as lerp, ramp, smooth, truckPose, workerPose } from './actors';
 
 const ink = '#17191c';
 const orange = '#f97832';
@@ -83,54 +83,141 @@ function Excavator() {
 
 function Truck() {
   return <g data-actor="truck" data-gp="truck" transform="translate(2560 605)">
-    <g data-gp="truck-dust" stroke="#b4b0a6" strokeWidth="1.6" opacity="0"><path d="M-198 70q-50-24-76-1m64 12h-82m42-25-48-6M-210 52q-30-30-64-8" /></g>
-    <path d="M-176 10h335v37h-335Z" fill="#30343b" />
-    <g data-gp="truck-bed"><path d="M-195-82H49l28 86h-231Z" fill={orange} /><path d="m-178-72 37 66m8-66 34 66m12-66 32 66m13-66 27 66M-199-84H66" strokeWidth="3" />
-      <g data-gp="truck-payload">{Array.from({ length: 14 }, (_, i) => <g key={i} data-payload={i}><Rock x={-172 + (i % 8) * 28 + Math.floor(i / 8) * 14} y={-86 - Math.floor(i / 8) * 22} size={.47 + (i % 3) * .12} variant={i} accent={i === 5} /></g>)}</g>
-    </g>
-    <path d="M67-105h95l35 114v38H74ZM86-94h58l22 48H86Z" fill={orange} fillRule="evenodd" />
-    <g data-actor="cab" transform="translate(83 -98)">
-      <clipPath id="cab-window"><path d="M3 4h58l22 48H3Z" /></clipPath>
-      <g clipPath="url(#cab-window)" strokeWidth=".45">
-        <path d="M3 34h80v20H3Z" fill="#d9dcdf" />
-        <path d="M5 8h50l12 24H5Z" stroke="#9aa0a7" strokeWidth=".35" fill="none" />
-        <path d="M18 24q2-3 6-3h7l3 26H17Z" fill="#3a3f46" />
-        <g data-gp="driver">
-          <path d="M28 33q1-7 8-8l9 1q6 2 6 9l-1 14H29Z" fill="#202227" />
-          <path d="M33 27l9-1 6 3-1 17h-13Z" fill={orange} />
-          <path d="M34 35h13m-12 5h12" stroke="#fffaf3" strokeWidth=".9" />
-          <path d="m44 31 8 4 9 1" stroke="#202227" strokeWidth="2.2" fill="none" />
-          <path d="m60 36 2 0" stroke="#f2eede" strokeWidth="2" />
-          <g data-gp="driver-head">
-            <path d="M38 23q-2-9 4-12 7-2 10 4l1 4 2 2-2 1-1 3q-3 3-8 2Z" fill="#f2eede" />
-            <path d="M37 13q0-7 7-7 8 0 9 7l2 1-19 1Z" fill={orange} />
-            <path d="M35 14.5h21" strokeWidth=".7" />
-            <path data-gp="driver-eyes" d="m49 16.5 2.4-.4" strokeWidth=".55" />
-            <path d="m53 19 1.4.6m-3.2 2.4 2 .1" strokeWidth=".35" />
+    {/* Truck Exterior: bed, wheels, chassis, headlights, exterior cab body */}
+    <g data-gp="truck-exterior">
+      <g data-gp="truck-dust" stroke="#b4b0a6" strokeWidth="1.6" opacity="0"><path d="M-198 70q-50-24-76-1m64 12h-82m42-25-48-6M-210 52q-30-30-64-8" /></g>
+      <path d="M-176 10h335v37h-335Z" fill="#30343b" />
+      <g data-gp="truck-bed"><path d="M-195-82H49l28 86h-231Z" fill={orange} /><path d="m-178-72 37 66m8-66 34 66m12-66 32 66m13-66 27 66M-199-84H66" strokeWidth="3" />
+        <g data-gp="truck-payload">{Array.from({ length: 14 }, (_, i) => <g key={i} data-payload={i}><Rock x={-172 + (i % 8) * 28 + Math.floor(i / 8) * 14} y={-86 - Math.floor(i / 8) * 22} size={.47 + (i % 3) * .12} variant={i} accent={i === 5} /></g>)}</g>
+      </g>
+      {/* Exterior cab body */}
+      <path d="M67-105h95l35 114v38H74ZM86-94h58l22 48H86Z" fill={orange} fillRule="evenodd" />
+      {/* Exterior cab window with small exterior driver silhouette */}
+      <g data-gp="cab-exterior" transform="translate(83 -98)">
+        <clipPath id="cab-window"><path d="M3 4h58l22 48H3Z" /></clipPath>
+        <g clipPath="url(#cab-window)" strokeWidth=".45">
+          <path d="M3 34h80v20H3Z" fill="#d9dcdf" />
+          <path d="M5 8h50l12 24H5Z" stroke="#9aa0a7" strokeWidth=".35" fill="none" />
+          <path d="M18 24q2-3 6-3h7l3 26H17Z" fill="#3a3f46" />
+          <g data-gp="driver">
+            <path d="M28 33q1-7 8-8l9 1q6 2 6 9l-1 14H29Z" fill="#202227" />
+            <path d="M33 27l9-1 6 3-1 17h-13Z" fill={orange} />
+            <path d="M34 35h13m-12 5h12" stroke="#fffaf3" strokeWidth=".9" />
+            <path d="m44 31 8 4 9 1" stroke="#202227" strokeWidth="2.2" fill="none" />
+            <path d="m60 36 2 0" stroke="#f2eede" strokeWidth="2" />
+            <g data-gp="driver-head">
+              <path d="M38 23q-2-9 4-12 7-2 10 4l1 4 2 2-2 1-1 3q-3 3-8 2Z" fill="#f2eede" />
+              <path d="M37 13q0-7 7-7 8 0 9 7l2 1-19 1Z" fill={orange} />
+              <path d="M35 14.5h21" strokeWidth=".7" />
+              <path data-gp="driver-eyes" d="m49 16.5 2.4-.4" strokeWidth=".55" />
+              <path d="m53 19 1.4.6m-3.2 2.4 2 .1" strokeWidth=".35" />
+            </g>
+          </g>
+          <ellipse cx="63" cy="37" rx="2" ry="7" transform="rotate(-18 63 37)" fill="none" strokeWidth=".9" />
+          <path d="M63 41 69 47M64 46h20l4 8H64Z" fill="#2b2f35" />
+          <path data-gp="cab-screen" d="M71 41.5h6v4h-6Z" fill="#a5b1b8" strokeWidth=".3" />
+          <path data-gp="driver-alert" d="m72.6 45 1.4-2.6 1.4 2.6Z" fill={red} stroke="none" opacity="0" />
+          <path d="M58 6h5l1 3h-5Z" fill={orange} strokeWidth=".3" /><circle cx="59.5" cy="7.5" r=".7" fill={ink} stroke="none" />
+          <g data-gp="driver-cv" data-art="cv" className="cv-layer" stroke={red} opacity="0" strokeWidth=".22" fill="none">
+            <path d="m59 8.5-8 8m8-8-4 12m4-12 2 14" strokeDasharray=".8 .8" />
+            <path d="M47 14h8v8h-8Z" strokeWidth=".3" />
+            {[[50, 16.5], [52, 19.5], [51, 22], [46, 18]].map(([x, y]) => <circle key={`${x}${y}`} cx={x} cy={y} r=".45" fill={red} stroke="none" />)}
+            <path data-gp="head-axis" d="M44 9v15" strokeDasharray=".6 .6" />
+            <text x="56" y="13" fill="#b9432d" stroke="none" fontSize="1.3">eye closure</text>
+            <text x="56" y="25" fill="#b9432d" stroke="none" fontSize="1.3">head pose</text>
           </g>
         </g>
-        <ellipse cx="63" cy="37" rx="2" ry="7" transform="rotate(-18 63 37)" fill="none" strokeWidth=".9" />
-        <path d="M63 41 69 47M64 46h20l4 8H64Z" fill="#2b2f35" />
-        <path data-gp="cab-screen" d="M71 41.5h6v4h-6Z" fill="#a5b1b8" strokeWidth=".3" />
-        <path data-gp="driver-alert" d="m72.6 45 1.4-2.6 1.4 2.6Z" fill={red} stroke="none" opacity="0" />
-        <path d="M58 6h5l1 3h-5Z" fill={orange} strokeWidth=".3" /><circle cx="59.5" cy="7.5" r=".7" fill={ink} stroke="none" />
-        <g data-gp="driver-cv" data-art="cv" className="cv-layer" stroke={red} opacity="0" strokeWidth=".22" fill="none">
-          <path d="m59 8.5-8 8m8-8-4 12m4-12 2 14" strokeDasharray=".8 .8" />
-          <path d="M47 14h8v8h-8Z" strokeWidth=".3" />
-          {[[50, 16.5], [52, 19.5], [51, 22], [46, 18]].map(([x, y]) => <circle key={`${x}${y}`} cx={x} cy={y} r=".45" fill={red} stroke="none" />)}
-          <path data-gp="head-axis" d="M44 9v15" strokeDasharray=".6 .6" />
-          <text x="56" y="13" fill="#b9432d" stroke="none" fontSize="1.3">eye closure</text>
-          <text x="56" y="25" fill="#b9432d" stroke="none" fontSize="1.3">head pose</text>
+        <path d="M0 0h70l25 69H0Z" fill="none" strokeWidth="2.3" />
+        <path d="M3 4h58l22 48H3Z" fill="none" strokeWidth="1.3" />
+        <path d="M4 1v51m61-48 20 48M2 52h83" stroke="#252930" strokeWidth="3" />
+        <path d="M30 52v14m-26-4h22" strokeWidth="1.2" />
+      </g>
+      {/* Front stairs / access ladder & headlights */}
+      <path d="M159-41h23l17 43m-12 7h15m-15 8h15m-15 8h15M91-10h15M73 5v27h15V5m-12 9h9m-9 9h9" strokeWidth="1.8" />
+      <path d="M178 36h27v12h-27Z" fill="#bec3c8" /><g data-ambient="beacon"><path d="M114-117h18v10h-18Z" fill="#ffb34b" /></g>
+      {/* Wheels */}
+      {[-126, 48, 155].map(cx => <g key={cx} transform={`translate(${cx} 45)`}><circle r="37" fill="#202227" /><circle r="24" fill="#aab1b9" /><circle r="11" fill="#4e555f" /><g data-gp="wheel"><path d="M0-32v10m32 22H22M0 32V22m-32-22h10" stroke="#68717b" strokeWidth="4" />{[0, 1, 2, 3, 4, 5].map(i => <circle key={i} cx={f1(Math.cos(i * Math.PI / 3) * 16)} cy={f1(Math.sin(i * Math.PI / 3) * 16)} r="2" fill="#252930" stroke="none" />)}</g></g>)}
+    </g>
+
+    {/* Cab detail stage: dedicated interior composition revealed through the windshield frame */}
+    <g data-gp="cab-detail-stage" data-gp-alias="cab-interior-detail" opacity="0" transform="translate(83 -98)">
+      <defs>
+        <clipPath id="cab-window-clip">
+          <path d="M-10 -15H115L145 75H-10Z" />
+        </clipPath>
+      </defs>
+
+      {/* Cab interior wrapped in window clip */}
+      <g clipPath="url(#cab-window-clip)">
+        {/* Cab interior background shell */}
+        <path d="M-14 -18h134l34 98H-14Z" fill="#181b22" stroke="#101216" strokeWidth="2" />
+        {/* Windshield road perspective & haul road outside */}
+        <path d="M-6 -10h112l26 68H-6Z" fill="#c3ccd5" />
+        <path d="M-6 24h134" stroke="#8c97a2" strokeWidth="2" />
+        <path data-gp="driver-road-line" d="M10 48l45 -22" stroke="#f8eed3" strokeWidth="3.5" strokeDasharray="12 9" />
+        {/* Distant haul road bench contour visible through window */}
+        <path d="M-6 18q50 -12 120 4" stroke="#a4adb6" strokeWidth="1.8" fill="none" />
+
+        {/* Dashboard console and steering wheel */}
+        <path d="M-10 34h136v40H-10Z" fill="#262a32" stroke="#15181e" strokeWidth="2" />
+        <circle cx="20" cy="48" r="8" fill="#181a1f" stroke="#5d6572" strokeWidth="1.5" />
+        <circle cx="72" cy="48" r="8" fill="#181a1f" stroke="#5d6572" strokeWidth="1.5" />
+        {/* Heavy haul steering wheel */}
+        <ellipse cx="45" cy="42" rx="22" ry="15" fill="none" stroke="#131518" strokeWidth="4.8" />
+        <path d="M23 42h44M45 42v15" stroke="#131518" strokeWidth="3.6" />
+
+        {/* Driver torso and hi-vis vest */}
+        <path d="M14 38q2-16 18-18h24q16 2 18 18v34H14Z" fill="#1b1e23" />
+        <path d="M22 32l10-12h18l10 12v30H22Z" fill={orange} />
+        <path d="M26 32h28M26 42h28" stroke="#ffffff" strokeWidth="2.4" />
+        <circle cx="25" cy="42" r="4.5" fill="#ebdcc8" /><circle cx="65" cy="42" r="4.5" fill="#ebdcc8" />
+
+        {/* Detailed driver head and clearly readable eyelid cues */}
+        <g data-gp="driver-detail-head" style={{ transformOrigin: '45px 18px' }}>
+          <path d="M30 10q3-16 15-16t15 16l4 2H26Z" fill={orange} stroke="#1b1d22" strokeWidth="1.6" />
+          <path d="M25 12h40v3.5H25Z" fill="#22262d" />
+          <path d="M31 13v12q0 8 14 8t14-8V13Z" fill="#ebdcc8" stroke="#22262d" strokeWidth="1.8" />
+          <path d="M29 18v5M59 18v5" stroke="#22262d" strokeWidth="1.5" />
+          <g data-gp="driver-detail-eyes">
+            <path data-gp="eye-l" d="M36 19.5h7" stroke="#1a1c22" strokeWidth="2.6" strokeLinecap="round" />
+            <path data-gp="eye-r" d="M47 19.5h7" stroke="#1a1c22" strokeWidth="2.6" strokeLinecap="round" />
+            <circle data-gp="pupil-l" cx="39.5" cy="20" r="1.4" fill="#1a1c22" />
+            <circle data-gp="pupil-r" cx="50.5" cy="20" r="1.4" fill="#1a1c22" />
+          </g>
+          <path d="M45 18v5l-2 1M40 27h10" stroke="#333840" strokeWidth="1.4" />
+        </g>
+
+        {/* In-cab fatigue optical sensor mounted on A-pillar */}
+        <path d="M84 2h20v16H84Z" fill="#20242b" stroke="#383e48" strokeWidth="1.6" />
+        <circle cx="94" cy="10" r="4.2" fill="#454c57" />
+        <circle data-gp="cab-cv-led" cx="100" cy="5.5" r="1.8" fill="#4ade80" />
+        <g data-gp="cab-cv-detail" data-art="cv" className="cv-layer" opacity="0" stroke={red} fill="none">
+          <path d="M94 10L40 18M94 10L50 22M94 10L45 28" strokeWidth="1.3" strokeDasharray="3 3" />
+          <rect x="33" y="12" width="24" height="20" rx="2.5" strokeWidth="1.8" />
+          <text x="60" y="8" fill="#b9432d" stroke="none" fontSize="7" fontWeight="bold">FATIGUE TRACKING</text>
+          <text x="60" y="17" fill="#b9432d" stroke="none" fontSize="6">PERCLOS: ELEVATED</text>
+        </g>
+
+        {/* Dashboard fatigue intervention alert */}
+        <g data-gp="cab-detail-alert" opacity="0">
+          <circle cx="45" cy="52" r="7" fill="#ef4444" />
+          <path d="M45 48v5M45 55v1.5" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" />
+          <text x="31" y="65" fill="#ef4444" stroke="none" fontSize="6" fontWeight="bold">ALERT: REFOCUS</text>
         </g>
       </g>
-      <path d="M0 0h70l25 69H0Z" fill="none" strokeWidth="2.3" />
-      <path d="M3 4h58l22 48H3Z" fill="none" strokeWidth="1.3" />
-      <path d="M4 1v51m61-48 20 48M2 52h83" stroke="#252930" strokeWidth="3" />
-      <path d="M30 52v14m-26-4h22" strokeWidth="1.2" />
+
+      {/* Foreground cab frame: angled structural A-pillar, roof edge, and window mullions */}
+      <g data-gp="cab-frame-fg" stroke="#131519" strokeWidth="2" fill="#1c1f26">
+        {/* Left A-pillar (angled structural steel) */}
+        <path d="M-12 -16h14l22 92H-12Z" />
+        {/* Roof line / lintel */}
+        <path d="M-12 -16h134v8H-12Z" />
+        {/* Right pillar / door frame */}
+        <path d="M96 -16h18l24 92H118Z" />
+        {/* Windshield lower sill */}
+        <path d="M18 68h112v8H18Z" fill="#14161b" />
+      </g>
     </g>
-    <path d="M159-41h23l17 43m-12 7h15m-15 8h15m-15 8h15M91-10h15M73 5v27h15V5m-12 9h9m-9 9h9" strokeWidth="1.8" />
-    <path d="M178 36h27v12h-27Z" fill="#bec3c8" /><g data-ambient="beacon"><path d="M114-117h18v10h-18Z" fill="#ffb34b" /></g>
-    {[-126, 48, 155].map(cx => <g key={cx} transform={`translate(${cx} 45)`}><circle r="37" fill="#202227" /><circle r="24" fill="#aab1b9" /><circle r="11" fill="#4e555f" /><g data-gp="wheel"><path d="M0-32v10m32 22H22M0 32V22m-32-22h10" stroke="#68717b" strokeWidth="4" />{[0, 1, 2, 3, 4, 5].map(i => <circle key={i} cx={f1(Math.cos(i * Math.PI / 3) * 16)} cy={f1(Math.sin(i * Math.PI / 3) * 16)} r="2" fill="#252930" stroke="none" />)}</g></g>)}
   </g>;
 }
 
@@ -216,6 +303,9 @@ function nodes(root: SVGElement) {
       const name = el.getAttribute('data-gp')!;
       result!.set(name, [...(result!.get(name) ?? []), el]);
     });
+    if (result.has('cab-detail-stage') && !result.has('cab-interior-detail')) {
+      result.set('cab-interior-detail', result.get('cab-detail-stage')!);
+    }
     const all = (sel: string) => Array.from(scope.querySelectorAll<SVGElement>(sel));
     result.set('$fragments', all('[data-fragment]'));
     result.set('$bursts', all('[data-burst]'));
@@ -339,20 +429,14 @@ export function updateGeologyPit(root: SVGElement, scene: SceneId, progress: num
   opacity('bucket-defect', is('bucket') && p >= .58 ? 1 : 0);
 
   // Worker walks into the swing path, is warned, and steps clear before the truck reverses in.
-  let wx = 2700, dir = -1, walk = 0;
-  if (is('safety')) {
-    const inT = heavy(ramp(p, .04, .48)), outT = heavy(ramp(p, .72, .9));
-    wx = lerp(lerp(2700, 2070, inT), 2330, outT); dir = outT > 0 ? 1 : -1; walk = (p < .48 || (p > .72 && p < .9)) ? 1 : 0;
-  } else if (is('bucket')) { wx = lerp(2330, 2780, heavy(ramp(p, .05, .5))); dir = 1; walk = p < .5 ? 1 : 0; }
-  else if (after(scene, 'bucket')) wx = 2780;
-  const bob = walk ? Math.abs(Math.sin(wx / 14)) * 3 : 0;
-  transform('worker', `translate(${f1(wx)} ${f1(640 - bob)})`);
-  transform('worker-body', `scale(${dir * .68} .68) rotate(${f1(walk * Math.sin(wx / 14) * 3)})`);
-  transform('worker-cv', `translate(${f1(wx)} 640)`);
+  const wk = workerPose(scene, p);
+  transform('worker', `translate(${f1(wk.x)} ${f1(wk.y)})`);
+  transform('worker-body', `scale(${wk.dir * .68} .68) rotate(${f1(wk.walk * Math.sin(wk.x / 14) * 3)})`);
+  transform('worker-cv', `translate(${f1(wk.x)} 640)`);
   opacity('worker-cv', is('safety') && (activeCV || p > .9) ? cvFade : 0);
   opacity('safety-cv', is('safety') && (activeCV || p > .9) ? cvFade : 0);
   attr('safety-zone', 'rx', is('safety') ? f1(120 + ramp(p, .4, .52) * 320) : 440);
-  attr('proximity', 'd', `M${f1(Math.min(2180, wx - 30))} 600H${f1(wx - 26)}`);
+  attr('proximity', 'd', `M${f1(Math.min(2180, wk.x - 30))} 600H${f1(wk.x - 26)}`);
   opacity('operator-warning', is('safety') && p >= .7 ? 1 : 0);
 
   // Loading: material falls from the bucket lip into the same truck bed.
@@ -381,12 +465,65 @@ export function updateGeologyPit(root: SVGElement, scene: SceneId, progress: num
     el.setAttribute('transform', `translate(${f1(3705 + i * 8 + k * 60)} ${f1(250 + i * 6 + g * 170)}) rotate(${f1(k * 120)})`);
   });
 
-  // Driver: attention drifts, the in-cab camera observes, an alert prompts refocus.
-  const tired = is('driver') ? smooth(ramp(p, .26, .42)) * (1 - smooth(ramp(p, .68, .76))) : 0;
-  transform('driver-head', `rotate(${f1(tired * 16)} 44 25) translate(0 ${f1(tired * 1.2)})`);
-  attr('driver-eyes', 'd', tired > .6 ? 'm49 17.2 2.4 0' : 'm49 16.5 2.4-.4');
-  opacity('driver-cv', is('driver') && activeCV ? 1 - ramp(p, .82, .9) : 0);
-  transform('head-axis', `rotate(${f1(tired * 16)} 44 24)`);
-  opacity('driver-alert', is('driver') && p >= .62 && p < .8 ? 1 : 0);
-  attr('cab-screen', 'fill', is('driver') && p >= .62 && p < .8 ? '#ffd2c2' : '#a5b1b8');
+  // Driver: attention drifts, in-cab camera observes, alert prompts refocus.
+  // Smooth architectural cab frame entry/exit with local magnification
+  if (is('driver')) {
+    // Timing arc:
+    // 0.00-0.10: approach cab exterior
+    // 0.10-0.22: A-pillar and windshield frame sweep into focal view, interior ramps in, local magnification scales 1.0 -> 2.4
+    // 0.22-0.78: quiet interior sequence, held at 2.4x magnification, exterior truck hidden
+    // 0.78-0.88: driver refocused, alert clears
+    // 0.88-0.96: cab framing pulls back, magnification 2.4 -> 1.0, exterior truck restores
+    // 0.96-1.00: exterior truck fully restored
+    const intro = ramp(p, 0.10, 0.22);
+    const outro = ramp(p, 0.86, 0.96);
+    const interiorDominance = smooth(intro) * (1 - smooth(outro));
+    const isInterior = interiorDominance > 0.05;
+
+    // Exterior truck fades gracefully as camera arrives inside cab
+    opacity('truck-exterior', 1 - interiorDominance);
+    opacity('cab-exterior', 1 - interiorDominance);
+
+    // Interior stage opacity
+    opacity('cab-detail-stage', interiorDominance);
+    opacity('cab-interior-detail', interiorDominance);
+
+    // Local magnification: scale from 1.0 up to 2.4 centered around (45, 18)
+    const localScale = 1.0 + interiorDominance * 1.4; // 1.0 -> 2.4
+    const ox = 45, oy = 18;
+    const tx = 83 + ox * (1 - localScale);
+    const ty = -98 + oy * (1 - localScale);
+    transform('cab-detail-stage', `translate(${f1(tx)} ${f1(ty)}) scale(${f1(localScale)})`);
+
+    // Fatigue development: attention drifts, eyes droop, alert at 0.60, refocus at 0.72
+    const tired = smooth(ramp(p, 0.28, 0.54)) * (1 - smooth(ramp(p, 0.68, 0.78)));
+    transform('driver-detail-head', `rotate(${f1(tired * 18)} 45 18) translate(0 ${f1(tired * 2.5)})`);
+    transform('driver-head', `rotate(${f1(tired * 16)} 44 25) translate(0 ${f1(tired * 1.2)})`);
+
+    // Eyes droop to slits when tired
+    const eyeSlit = tired > 0.45;
+    opacity('pupil-l', eyeSlit ? 0 : 1);
+    opacity('pupil-r', eyeSlit ? 0 : 1);
+    attr('eye-l', 'd', eyeSlit ? `M36 ${19.5 + tired * 1.5}h7` : 'M36 19.5h7');
+    attr('eye-r', 'd', eyeSlit ? `M47 ${19.5 + tired * 1.5}h7` : 'M47 19.5h7');
+    attr('driver-eyes', 'd', eyeSlit ? 'm49 17.2 2.4 0' : 'm49 16.5 2.4-.4');
+
+    // CV fatigue sensor cone and HUD signals
+    opacity('cab-cv-detail', activeCV && isInterior && p >= 0.34 && p <= 0.84 ? 1 : 0);
+    opacity('driver-cv', is('driver') && activeCV ? 1 - ramp(p, .82, .9) : 0);
+    transform('head-axis', `rotate(${f1(tired * 16)} 44 24)`);
+
+    // Alert indicator
+    const alerting = isInterior && p >= 0.60 && p <= 0.78;
+    opacity('cab-detail-alert', alerting ? 1 : 0);
+    attr('cab-cv-led', 'fill', alerting ? '#ef4444' : '#4ade80');
+    opacity('driver-alert', is('driver') && p >= .62 && p < .8 ? 1 : 0);
+    attr('cab-screen', 'fill', is('driver') && p >= .62 && p < .8 ? '#ffd2c2' : '#a5b1b8');
+  } else {
+    opacity('truck-exterior', 1);
+    opacity('cab-exterior', 1);
+    opacity('cab-detail-stage', 0);
+    opacity('cab-interior-detail', 0);
+    transform('cab-detail-stage', 'translate(83 -98) scale(1)');
+  }
 }
